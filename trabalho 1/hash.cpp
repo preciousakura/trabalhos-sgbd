@@ -151,6 +151,18 @@ public:
 		return -1;
 	}
 
+	int *deslocarBits(int *bits, int profundidade)
+	{
+		int *novosBits = new int[profundidade];
+		novosBits[0] = 0;
+		for (int i = profundidade - 1; i >= 0; i--)
+		{
+			if (i)
+				novosBits[i] = bits[i - 1];
+		}
+		return novosBits;
+	}
+
 	Hash *duplicarDiretorio()
 	{
 		int novaProfGlobal = profGlobal + 1, posHash = 0;
@@ -164,7 +176,7 @@ public:
 			if (i < qtdPonteiros)
 			{
 				novosHash[i] = hashs[i];
-				novosHash[i].lsb = toBinary(i, false, novaProfGlobal);
+				novosHash[i].lsb = deslocarBits(hashs[i].lsb, novaProfGlobal);
 			}
 			else
 			{
@@ -182,9 +194,9 @@ public:
 
 	void dividir_bucket(int posHashAtual)
 	{
-		Bucket bucketAtual = *(hashs[posHashAtual].bucket);
+		Bucket *bucketAtual = hashs[posHashAtual].bucket;
 
-		int novaProfundidadeLocal = bucketAtual.profLocal + 1, posHash = 0;
+		int novaProfundidadeLocal = bucketAtual->profLocal + 1, posHash = 0;
 
 		hashs[posHashAtual].bucket = criar_bucket(novaProfundidadeLocal);
 
@@ -192,17 +204,16 @@ public:
 
 		for (int i = 0; i < SIZEBUCKET; i++)
 		{
-			lsbVinho = toBinary(bucketAtual.vinhos[i].ano_colheita, true, profGlobal);
+			lsbVinho = toBinary(bucketAtual->vinhos[i].ano_colheita, true, profGlobal);
 
 			posHash = searchFunctionHash(lsbVinho);
 
 			if (hashs[posHash].bucket->estaCheio())
-			{
 				hashs[posHash].bucket = criar_bucket(novaProfundidadeLocal);
-			}
 
-			hashs[posHash].bucket->inserir_vinho(bucketAtual.vinhos[i]);
+			hashs[posHash].bucket->inserir_vinho(bucketAtual->vinhos[i]);
 		}
+		delete bucketAtual;
 	}
 
 	void percorrerBuckets()
@@ -230,9 +241,7 @@ public:
 		if (posHash == -1)
 			return;
 
-		Hash hashEncontrado = hashs[posHash];
-
-		Bucket *bucketEncontrado = hashEncontrado.bucket;
+		Bucket *bucketEncontrado = hashs[posHash].bucket;
 
 		bucketEncontrado->inserir_vinho(v);
 
@@ -264,6 +273,12 @@ int main()
 	d.insert(1, 9, "vinho da isa", "branco");
 	d.insert(1, 20, "vinho da isa", "branco");
 	d.insert(1, 26, "vinho da isa", "branco");
+	d.insert(1, 15, "vinho da isa", "branco");
+	d.insert(1, 106, "vinho da isa", "branco");
+	d.insert(1, 290, "vinho da isa", "branco");
+	d.insert(1, 357, "vinho da isa", "branco");
+	d.insert(1, 33, "vinho da isa", "branco");
+	d.insert(1, 71, "vinho da isa", "branco");
 	d.percorrerBuckets();
 
 	return 0;
