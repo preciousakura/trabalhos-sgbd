@@ -2,9 +2,14 @@
 #include <string>
 #include <math.h>
 
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <sstream>
+
 using namespace std;
 
-#define SIZEBUCKET 4
+#define SIZEBUCKET 32
 
 class Diretorio
 {
@@ -213,7 +218,16 @@ public:
 
 			hashs[posHash].bucket->inserir_vinho(bucketAtual->vinhos[i]);
 		}
-		delete bucketAtual;
+		
+		// atualizar buckets
+		if(hashs[posHashAtual].bucket->profLocal < profGlobal) {
+			for (int j = 0; j < hashs[posHashAtual].bucket->size; j++) 
+				bucketAtual->vinhos[j] = hashs[posHashAtual].bucket->vinhos[j];
+			bucketAtual->size = hashs[posHashAtual].bucket->size;
+			bucketAtual->profLocal = hashs[posHashAtual].bucket->profLocal;
+		}
+		else // apagar bucket da memória
+			delete bucketAtual;
 	}
 
 	void percorrerBuckets()
@@ -229,6 +243,11 @@ public:
 			}
 			cout << endl;
 		}
+	}
+	
+	void remove(int ano_colheita) {
+		int *lsbVinho = toBinary(ano_colheita, true, profGlobal);
+		int posHash = searchFunctionHash(lsbVinho);
 	}
 
 	void insert(int id, int ano_colheita, string rotulo, string tipo)
@@ -260,25 +279,33 @@ public:
 
 int main()
 {
-	Diretorio d(1);
+	Diretorio d(2);
+	
+	ifstream ip("vinhos.csv");
+	if(!ip.is_open()) {
+		cout << "Error: File Open" << endl;
+		return 0;
+	}
+	
+	string vinho_id;
+	string rotulo;
+	string ano_colheita;
+	string tipo;
+	
+	getline(ip, vinho_id); // pegar primeira linha do arquivo
 
-	d.insert(1, 16, "vinho da isa", "branco");
-	d.insert(1, 4, "vinho da isa", "branco");
-	d.insert(1, 6, "vinho da isa", "branco");
-	d.insert(1, 22, "vinho da isa", "branco");
-	d.insert(1, 24, "vinho da isa", "branco");
-	d.insert(1, 10, "vinho da isa", "branco");
-	d.insert(1, 31, "vinho da isa", "branco");
-	d.insert(1, 7, "vinho da isa", "branco");
-	d.insert(1, 9, "vinho da isa", "branco");
-	d.insert(1, 20, "vinho da isa", "branco");
-	d.insert(1, 26, "vinho da isa", "branco");
-	d.insert(1, 15, "vinho da isa", "branco");
-	d.insert(1, 106, "vinho da isa", "branco");
-	d.insert(1, 290, "vinho da isa", "branco");
-	d.insert(1, 357, "vinho da isa", "branco");
-	d.insert(1, 33, "vinho da isa", "branco");
-	d.insert(1, 71, "vinho da isa", "branco");
+	while(ip.good()) {
+		getline(ip, vinho_id, ',');
+		getline(ip, rotulo, ',');
+		getline(ip, ano_colheita, ',');
+		getline(ip, tipo);
+		
+		if(vinho_id != "") {
+			d.insert(stoi(vinho_id), stoi(ano_colheita), rotulo, tipo);
+		}
+	}
+	
+	ip.close();
 	d.percorrerBuckets();
 
 	return 0;
