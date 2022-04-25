@@ -220,7 +220,7 @@ public:
 		}
 		
 		// atualizar buckets
-		if(hashs[posHashAtual].bucket->profLocal < profGlobal) {
+		if(novaProfundidadeLocal < profGlobal) {
 			for (int j = 0; j < hashs[posHashAtual].bucket->size; j++) 
 				bucketAtual->vinhos[j] = hashs[posHashAtual].bucket->vinhos[j];
 			bucketAtual->size = hashs[posHashAtual].bucket->size;
