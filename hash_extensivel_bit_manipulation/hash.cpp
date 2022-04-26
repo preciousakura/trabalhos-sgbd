@@ -68,7 +68,6 @@ public:
 
 	typedef struct Hash
 	{
-		int *lsb;
 		Bucket *bucket;
 	} Hash;
 
@@ -82,7 +81,7 @@ public:
 
 		for (int i = 0; i < qtdPonteiros; i++)
 		{ // inicializando buckets
-			hashs[i] = criar_hash(criar_bucket(profGlobal), i);
+			hashs[i] = criar_hash(criar_bucket(profGlobal));
 		}
 	}
 
@@ -94,51 +93,12 @@ public:
 		return b;
 	}
 
-	Hash criar_hash(Bucket *bucket, int i)
+	Hash criar_hash(Bucket *bucket)
 	{
 		Hash h;
-		h.lsb = toBinary(i, false, profGlobal);
 		h.bucket = bucket;
 		return h;
 	};
-
-	int *inicializar_vetor(int size)
-	{ // preenchendo vetor com 0
-		int *newVetor = new int[size];
-		for (int i = 0; i < size; i++)
-			newVetor[i] = 0;
-		return newVetor;
-	}
-
-	int *toBinary(int value, bool getLsbs, int profundidade)
-	{
-		int *bits = inicializar_vetor(32);
-		int bitSize = 0;
-
-		int *lsb = new int[profundidade];
-
-		int i = 0;
-
-		while (value != 0)
-		{
-			bits[i] = value % 2;
-			value /= 2;
-			i++;
-			bitSize++;
-		}
-
-		if (bitSize < profundidade)
-			bitSize = profundidade;
-
-		if (getLsbs)
-			for (i = 0; i < profundidade; i++)
-				lsb[(profundidade - 1) - i] = bits[i];
-		else
-			for (i = bitSize - 1; i >= 0; i--)
-				lsb[(bitSize - 1) - i] = bits[i];
-
-		return lsb;
-	}
 
 	Vinho createVinho(int id, int ano_colheita, string rotulo, string tipo)
 	{
@@ -150,38 +110,12 @@ public:
 		return vinho;
 	}
 
-	int searchFunctionHash(int *lsbVinho, int profundidade)
+	int searchFunctionHash(int profundidade, int i)
 	{
-		bool encontrado;
-		for (int i = 0; i < qtdPonteiros; i++)
-		{
-			encontrado = true;
-			int h = profundidade - 1;
-			for (int j = profGlobal - 1; j >= (profGlobal - profundidade); j--)
-			{
-				if (hashs[i].lsb[j] != lsbVinho[h])
-				{
-					encontrado = false;
-					break;
-				}
-				h--;
-			}
-			if (encontrado)
-				return i;
-		}
-		return -1;
-	}
-
-	int *deslocarBits(int *bits, int profundidade)
-	{
-		int *novosBits = new int[profundidade];
-		novosBits[0] = 0;
-		for (int i = profundidade - 1; i >= 0; i--)
-		{
-			if (i)
-				novosBits[i] = bits[i - 1];
-		}
-		return novosBits;
+    int j = pow(2, profundidade) - 1;
+    int k = i & j;
+    if(k > qtdPonteiros) return -1;
+    return k; 
 	}
 
 	Hash *duplicarDiretorio()
@@ -190,20 +124,17 @@ public:
 		int novaQtdPonteiros = pow(2, novaProfGlobal);
 
 		Hash *novosHash = new Hash[novaQtdPonteiros];
-		int *lsbFr = nullptr;
 
 		for (int i = 0; i < novaQtdPonteiros; i++)
 		{
 			if (i < qtdPonteiros)
 			{
 				novosHash[i] = hashs[i];
-				novosHash[i].lsb = deslocarBits(hashs[i].lsb, novaProfGlobal);
 			}
 			else
 			{
-				lsbFr = toBinary(i, true, novaProfGlobal - 1);
-				posHash = searchFunctionHash(lsbFr, profGlobal);
-				novosHash[i] = criar_hash(hashs[posHash].bucket, i);
+				posHash = searchFunctionHash(profGlobal, i);
+				novosHash[i] = criar_hash(hashs[posHash].bucket);
 			}
 		}
 
@@ -220,12 +151,11 @@ public:
 		int novaProfundidadeLocal = bucketAtual->profLocal + 1, posHash = 0;
 		bucketAtual->profLocal = novaProfundidadeLocal;
 
-		int *lsbVinho = nullptr, i = 0;
+		int i = 0;
 		while (i < bucketAtual->size)
 		{
-			lsbVinho = toBinary(bucketAtual->vinhos[i].ano_colheita, true, novaProfundidadeLocal);
-			posHash = searchFunctionHash(lsbVinho, novaProfundidadeLocal);
-
+			posHash = searchFunctionHash(novaProfundidadeLocal, bucketAtual->vinhos[i].ano_colheita);
+      
 			if (posHash == posHashAtual)
 			{
 				i++;
@@ -243,8 +173,7 @@ public:
 	{
 		for (int i = 0; i < qtdPonteiros; i++)
 		{
-			for (int k = 0; k < profGlobal; k++)
-				cout << hashs[i].lsb[k];
+			cout << i;
 			cout << " - global: " << profGlobal << " local: " << hashs[i].bucket->profLocal << endl;
 			for (int j = 0; j < hashs[i].bucket->size; j++)
 			{
@@ -256,7 +185,7 @@ public:
 
 	void remove(int ano_colheita)
 	{
-		int *lsbVinho = toBinary(ano_colheita, true, profGlobal);
+		//int *lsbVinho = toBinary(ano_colheita, true, profGlobal);
 		// int posHash = searchFunctionHash(lsbVinho);
 	}
 
@@ -282,11 +211,8 @@ public:
 	{
 		Vinho v = createVinho(id, ano_colheita, rotulo, tipo);
 
-		int *lsbVinho = toBinary(ano_colheita, true, profGlobal);
-		int posHash = searchFunctionHash(lsbVinho, profGlobal);
-
-		if (posHash == -1)
-			return;
+		int posHash = searchFunctionHash(profGlobal, ano_colheita);
+		
 		insert_recursive(v, posHash);
 	}
 };
