@@ -41,15 +41,18 @@ public:
 				return true; // verificando se o bucket está cheio
 			return false;
 		}
-		
-		bool hasVinho(int i, int id) {
-			if(vinhos[i].id == id) return true;
+
+		bool hasVinho(int i, int id)
+		{
+			if (vinhos[i].id == id)
+				return true;
 			return false;
 		}
-		
-		Vinho get_vinho(int i) {
+
+		Vinho get_vinho(int i)
+		{
 			Vinho v = vinhos[i];
-			for(int j = i; j < size - 1; j++)
+			for (int j = i; j < size - 1; j++)
 				vinhos[j] = vinhos[j + 1];
 			return v;
 		}
@@ -60,7 +63,7 @@ public:
 			size++;
 		}
 	};
-	
+
 	int profGlobal, qtdPonteiros;
 
 	typedef struct Hash
@@ -68,9 +71,9 @@ public:
 		int *lsb;
 		Bucket *bucket;
 	} Hash;
-	
+
 	Hash *hashs;
-	
+
 	Diretorio(int pGlobal)
 	{
 		profGlobal = pGlobal;
@@ -107,7 +110,7 @@ public:
 		return newVetor;
 	}
 
-int *toBinary(int value, bool getLsbs, int profundidade)
+	int *toBinary(int value, bool getLsbs, int profundidade)
 	{
 		int *bits = inicializar_vetor(32);
 		int bitSize = 0;
@@ -153,8 +156,8 @@ int *toBinary(int value, bool getLsbs, int profundidade)
 		for (int i = 0; i < qtdPonteiros; i++)
 		{
 			encontrado = true;
-			int h = profundidade -  1;
-			for (int j = profGlobal-1; j >= (profGlobal - profundidade); j--)
+			int h = profundidade - 1;
+			for (int j = profGlobal - 1; j >= (profGlobal - profundidade); j--)
 			{
 				if (hashs[i].lsb[j] != lsbVinho[h])
 				{
@@ -213,19 +216,24 @@ int *toBinary(int value, bool getLsbs, int profundidade)
 	void dividir_bucket(int posHashAtual)
 	{
 		Bucket *bucketAtual = hashs[posHashAtual].bucket;
-		
+
 		int novaProfundidadeLocal = bucketAtual->profLocal + 1, posHash = 0;
 		bucketAtual->profLocal = novaProfundidadeLocal;
-				
+
 		int *lsbVinho = nullptr, i = 0;
-		while(i < bucketAtual->size) {
+		while (i < bucketAtual->size)
+		{
 			lsbVinho = toBinary(bucketAtual->vinhos[i].ano_colheita, true, novaProfundidadeLocal);
 			posHash = searchFunctionHash(lsbVinho, novaProfundidadeLocal);
-			
-			if(posHash == posHashAtual) { i++; continue; }
-			if(hashs[posHash].bucket->hasVinho(i, bucketAtual->vinhos[i].id)) 
-				 hashs[posHash].bucket = criar_bucket(novaProfundidadeLocal);
-			
+
+			if (posHash == posHashAtual)
+			{
+				i++;
+				continue;
+			}
+			if (hashs[posHash].bucket->hasVinho(i, bucketAtual->vinhos[i].id))
+				hashs[posHash].bucket = criar_bucket(novaProfundidadeLocal);
+
 			insert_recursive(bucketAtual->get_vinho(i), posHash);
 			bucketAtual->size--;
 		}
@@ -245,15 +253,17 @@ int *toBinary(int value, bool getLsbs, int profundidade)
 			cout << endl;
 		}
 	}
-	
-	void remove(int ano_colheita) {
+
+	void remove(int ano_colheita)
+	{
 		int *lsbVinho = toBinary(ano_colheita, true, profGlobal);
-		//int posHash = searchFunctionHash(lsbVinho);
+		// int posHash = searchFunctionHash(lsbVinho);
 	}
-	
-	void insert_recursive(Vinho v, int posHash) {
+
+	void insert_recursive(Vinho v, int posHash)
+	{
 		Bucket *bucketEncontrado = hashs[posHash].bucket;
-		
+
 		bucketEncontrado->inserir_vinho(v);
 
 		if (bucketEncontrado->estaCheio())
@@ -286,33 +296,32 @@ int main()
 	Diretorio d(2);
 
 	ifstream ip("vinhos.csv");
-	if(!ip.is_open()) {
+	if (!ip.is_open())
+	{
 		cout << "Error: File Open" << endl;
 		return 0;
 	}
-	
+
 	string vinho_id;
 	string rotulo;
 	string ano_colheita;
 	string tipo;
-	
+
 	getline(ip, vinho_id); // pegar primeira linha do arquivo
 
-	while(ip.good()) {
+	while (ip.good())
+	{
 		getline(ip, vinho_id, ',');
 		getline(ip, rotulo, ',');
 		getline(ip, ano_colheita, ',');
 		getline(ip, tipo);
-		
-		cout << endl;
-		cout << "inserir " << ano_colheita << endl;
-		cout << endl;
-		
-		if(vinho_id != "") {
+
+		if (vinho_id != "")
+		{
 			d.insert(stoi(vinho_id), stoi(ano_colheita), rotulo, tipo);
-		}		
+		}
 	}
-	
+
 	d.percorrerBuckets();
 	ip.close();
 	return 0;
