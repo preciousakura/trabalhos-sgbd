@@ -46,7 +46,6 @@ public:
 			Vinho v = vinhos[i];
 			for(int j = i; j < size - 1; j++)
 				vinhos[j] = vinhos[j + 1];
-			size--;
 			return v;
 		}
 
@@ -224,7 +223,6 @@ int *toBinary(int value, bool getLsbs, int profundidade)
 		int novaProfundidadeLocal = bucketAtual->profLocal + 1, posHash = 0;
 		bucketAtual->profLocal = novaProfundidadeLocal;
 		
-		int *te = get_lsb_pair(posHashAtual, novaProfundidadeLocal);
 		int indexPair = searchFunctionHash(get_lsb_pair(posHashAtual, novaProfundidadeLocal), profGlobal);
 		if(hashs[indexPair].bucket->estaCheio()) hashs[indexPair].bucket = criar_bucket(novaProfundidadeLocal);
 		
@@ -233,9 +231,10 @@ int *toBinary(int value, bool getLsbs, int profundidade)
 			lsbVinho = toBinary(bucketAtual->vinhos[i].ano_colheita, true, novaProfundidadeLocal);
 			posHash = searchFunctionHash(lsbVinho, novaProfundidadeLocal);
 			
-			if(posHash == posHashAtual || posHash != indexPair) { i++; continue; }
+			if(posHash == posHashAtual) { i++; continue; }
 			
 			insert_recursive(bucketAtual->get_vinho(i), posHash);
+			bucketAtual->size--;
 		}
 	}
 
@@ -248,7 +247,7 @@ int *toBinary(int value, bool getLsbs, int profundidade)
 			cout << " - global: " << profGlobal << " local: " << hashs[i].bucket->profLocal << endl;
 			for (int j = 0; j < hashs[i].bucket->size; j++)
 			{
-				cout << hashs[i].bucket->vinhos[j].id << ' ';
+				cout << hashs[i].bucket->vinhos[j].ano_colheita << ' ';
 			}
 			cout << endl;
 		}
