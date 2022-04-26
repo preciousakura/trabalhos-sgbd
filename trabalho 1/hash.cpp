@@ -41,6 +41,14 @@ public:
 				return true; // verificando se o bucket está cheio
 			return false;
 		}
+		
+		Vinho get_vinho(int i) {
+			Vinho v = vinhos[i];
+			for(int j = i; j < size - 1; j++)
+				vinhos[j] = vinhos[j + 1];
+			size--;
+			return v;
+		}
 
 		void inserir_vinho(Vinho v)
 		{
@@ -95,7 +103,7 @@ public:
 		return newVetor;
 	}
 
-	int *toBinary(int value, bool getLsbs, int profundidade)
+int *toBinary(int value, bool getLsbs, int profundidade)
 	{
 		int *bits = inicializar_vetor(32);
 		int bitSize = 0;
@@ -135,20 +143,21 @@ public:
 		return vinho;
 	}
 
-	int searchFunctionHash(int *lsbVinho)
+	int searchFunctionHash(int *lsbVinho, int profundidade)
 	{
-
 		bool encontrado;
 		for (int i = 0; i < qtdPonteiros; i++)
 		{
 			encontrado = true;
-			for (int j = 0; j < profGlobal; j++)
+			int h = profundidade -  1;
+			for (int j = profGlobal-1; j >= (profGlobal - profundidade); j--)
 			{
-				if (hashs[i].lsb[j] != lsbVinho[j])
+				if (hashs[i].lsb[j] != lsbVinho[h])
 				{
 					encontrado = false;
-					continue;
+					break;
 				}
+				h--;
 			}
 			if (encontrado)
 				return i;
@@ -186,7 +195,7 @@ public:
 			else
 			{
 				lsbFr = toBinary(i, true, novaProfGlobal - 1);
-				posHash = searchFunctionHash(lsbFr);
+				posHash = searchFunctionHash(lsbFr, profGlobal);
 				novosHash[i] = criar_hash(hashs[posHash].bucket, i);
 			}
 		}
@@ -196,38 +205,38 @@ public:
 		delete hashs;
 		return novosHash;
 	}
+	
+	int* get_lsb_pair(int posHash, int profundidade) {
+		int *lsb = new int[32];
+		for(int i = 0; i < profGlobal; i++) {
+			if(i == profGlobal - profundidade) {
+				if(hashs[posHash].lsb[i] == 0) lsb[i] = 1;
+				else lsb[i] = 0; 
+			} else lsb[i] = hashs[posHash].lsb[i];
+		}
+		return lsb;
+	}
 
 	void dividir_bucket(int posHashAtual)
 	{
 		Bucket *bucketAtual = hashs[posHashAtual].bucket;
-
-		int novaProfundidadeLocal = bucketAtual->profLocal + 1, posHash = 0;
-
-		hashs[posHashAtual].bucket = criar_bucket(novaProfundidadeLocal);
-
-		int *lsbVinho = nullptr;
-
-		for (int i = 0; i < SIZEBUCKET; i++)
-		{
-			lsbVinho = toBinary(bucketAtual->vinhos[i].ano_colheita, true, profGlobal);
-
-			posHash = searchFunctionHash(lsbVinho);
-
-			if (hashs[posHash].bucket->estaCheio())
-				hashs[posHash].bucket = criar_bucket(novaProfundidadeLocal);
-
-			hashs[posHash].bucket->inserir_vinho(bucketAtual->vinhos[i]);
-		}
 		
-		// atualizar buckets
-		if(novaProfundidadeLocal < profGlobal) {
-			for (int j = 0; j < hashs[posHashAtual].bucket->size; j++) 
-				bucketAtual->vinhos[j] = hashs[posHashAtual].bucket->vinhos[j];
-			bucketAtual->size = hashs[posHashAtual].bucket->size;
-			bucketAtual->profLocal = hashs[posHashAtual].bucket->profLocal;
+		int novaProfundidadeLocal = bucketAtual->profLocal + 1, posHash = 0;
+		bucketAtual->profLocal = novaProfundidadeLocal;
+		
+		int *te = get_lsb_pair(posHashAtual, novaProfundidadeLocal);
+		int indexPair = searchFunctionHash(get_lsb_pair(posHashAtual, novaProfundidadeLocal), profGlobal);
+		if(hashs[indexPair].bucket->estaCheio()) hashs[indexPair].bucket = criar_bucket(novaProfundidadeLocal);
+		
+		int *lsbVinho = nullptr, i = 0;
+		while(i < bucketAtual->size) {
+			lsbVinho = toBinary(bucketAtual->vinhos[i].ano_colheita, true, novaProfundidadeLocal);
+			posHash = searchFunctionHash(lsbVinho, novaProfundidadeLocal);
+			
+			if(posHash == posHashAtual || posHash != indexPair) { i++; continue; }
+			
+			insert_recursive(bucketAtual->get_vinho(i), posHash);
 		}
-		else // apagar bucket da memória
-			delete bucketAtual;
 	}
 
 	void percorrerBuckets()
@@ -239,7 +248,7 @@ public:
 			cout << " - global: " << profGlobal << " local: " << hashs[i].bucket->profLocal << endl;
 			for (int j = 0; j < hashs[i].bucket->size; j++)
 			{
-				cout << hashs[i].bucket->vinhos[j].ano_colheita << ' ';
+				cout << hashs[i].bucket->vinhos[j].id << ' ';
 			}
 			cout << endl;
 		}
@@ -247,21 +256,12 @@ public:
 	
 	void remove(int ano_colheita) {
 		int *lsbVinho = toBinary(ano_colheita, true, profGlobal);
-		int posHash = searchFunctionHash(lsbVinho);
+		//int posHash = searchFunctionHash(lsbVinho);
 	}
-
-	void insert(int id, int ano_colheita, string rotulo, string tipo)
-	{
-		Vinho v = createVinho(id, ano_colheita, rotulo, tipo);
-
-		int *lsbVinho = toBinary(ano_colheita, true, profGlobal);
-		int posHash = searchFunctionHash(lsbVinho);
-
-		if (posHash == -1)
-			return;
-
+	
+	void insert_recursive(Vinho v, int posHash) {
 		Bucket *bucketEncontrado = hashs[posHash].bucket;
-
+		
 		bucketEncontrado->inserir_vinho(v);
 
 		if (bucketEncontrado->estaCheio())
@@ -275,12 +275,24 @@ public:
 			}
 		}
 	}
+
+	void insert(int id, int ano_colheita, string rotulo, string tipo)
+	{
+		Vinho v = createVinho(id, ano_colheita, rotulo, tipo);
+
+		int *lsbVinho = toBinary(ano_colheita, true, profGlobal);
+		int posHash = searchFunctionHash(lsbVinho, profGlobal);
+
+		if (posHash == -1)
+			return;
+		insert_recursive(v, posHash);
+	}
 };
 
 int main()
 {
 	Diretorio d(2);
-	
+
 	ifstream ip("vinhos.csv");
 	if(!ip.is_open()) {
 		cout << "Error: File Open" << endl;
@@ -306,7 +318,5 @@ int main()
 	}
 	
 	ip.close();
-	d.percorrerBuckets();
-
 	return 0;
 }
