@@ -42,6 +42,11 @@ public:
 			return false;
 		}
 		
+		bool hasVinho(int i, int id) {
+			if(vinhos[i].id == id) return true;
+			return false;
+		}
+		
 		Vinho get_vinho(int i) {
 			Vinho v = vinhos[i];
 			for(int j = i; j < size - 1; j++)
@@ -55,17 +60,17 @@ public:
 			size++;
 		}
 	};
+	
+	int profGlobal, qtdPonteiros;
 
 	typedef struct Hash
 	{
 		int *lsb;
 		Bucket *bucket;
-
 	} Hash;
-
-	int profGlobal, qtdPonteiros;
+	
 	Hash *hashs;
-
+	
 	Diretorio(int pGlobal)
 	{
 		profGlobal = pGlobal;
@@ -204,17 +209,6 @@ int *toBinary(int value, bool getLsbs, int profundidade)
 		delete hashs;
 		return novosHash;
 	}
-	
-	int* get_lsb_pair(int posHash, int profundidade) {
-		int *lsb = new int[32];
-		for(int i = 0; i < profGlobal; i++) {
-			if(i == profGlobal - profundidade) {
-				if(hashs[posHash].lsb[i] == 0) lsb[i] = 1;
-				else lsb[i] = 0; 
-			} else lsb[i] = hashs[posHash].lsb[i];
-		}
-		return lsb;
-	}
 
 	void dividir_bucket(int posHashAtual)
 	{
@@ -222,16 +216,15 @@ int *toBinary(int value, bool getLsbs, int profundidade)
 		
 		int novaProfundidadeLocal = bucketAtual->profLocal + 1, posHash = 0;
 		bucketAtual->profLocal = novaProfundidadeLocal;
-		
-		int indexPair = searchFunctionHash(get_lsb_pair(posHashAtual, novaProfundidadeLocal), profGlobal);
-		if(hashs[indexPair].bucket->estaCheio()) hashs[indexPair].bucket = criar_bucket(novaProfundidadeLocal);
-		
+				
 		int *lsbVinho = nullptr, i = 0;
 		while(i < bucketAtual->size) {
 			lsbVinho = toBinary(bucketAtual->vinhos[i].ano_colheita, true, novaProfundidadeLocal);
 			posHash = searchFunctionHash(lsbVinho, novaProfundidadeLocal);
 			
 			if(posHash == posHashAtual) { i++; continue; }
+			if(hashs[posHash].bucket->hasVinho(i, bucketAtual->vinhos[i].id)) 
+				 hashs[posHash].bucket = criar_bucket(novaProfundidadeLocal);
 			
 			insert_recursive(bucketAtual->get_vinho(i), posHash);
 			bucketAtual->size--;
@@ -247,7 +240,7 @@ int *toBinary(int value, bool getLsbs, int profundidade)
 			cout << " - global: " << profGlobal << " local: " << hashs[i].bucket->profLocal << endl;
 			for (int j = 0; j < hashs[i].bucket->size; j++)
 			{
-				cout << hashs[i].bucket->vinhos[j].ano_colheita << ' ';
+				cout << "(" << hashs[i].bucket->vinhos[j].ano_colheita << ", " << hashs[i].bucket->vinhos[j].id << ") ";
 			}
 			cout << endl;
 		}
@@ -311,11 +304,16 @@ int main()
 		getline(ip, ano_colheita, ',');
 		getline(ip, tipo);
 		
+		cout << endl;
+		cout << "inserir " << ano_colheita << endl;
+		cout << endl;
+		
 		if(vinho_id != "") {
 			d.insert(stoi(vinho_id), stoi(ano_colheita), rotulo, tipo);
-		}
+		}		
 	}
 	
+	d.percorrerBuckets();
 	ip.close();
 	return 0;
 }
