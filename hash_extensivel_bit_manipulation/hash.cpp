@@ -14,6 +14,13 @@ using namespace std;
 class Diretorio
 {
 public:
+	typedef struct Retorno
+	{
+		int profundidadeGlobal;
+		int profundidadeLocal;
+		int quantidade;
+	} Retorno;
+
 	typedef struct Vinho
 	{
 		int id;
@@ -55,6 +62,32 @@ public:
 			for (int j = i; j < size - 1; j++)
 				vinhos[j] = vinhos[j + 1];
 			return v;
+		}
+
+		int removeEmMassa(int ano_colheita)
+		{
+			int count = 0, i = 0;
+			while (i < size)
+			{
+				if (vinhos[i].ano_colheita == ano_colheita)
+				{
+					get_vinho(i);
+					size--;
+					count++;
+				}
+				else
+					i++;
+			}
+			return count;
+		}
+
+		int coutVinhos(int ano_colheita)
+		{
+			int j = 0;
+			for (int i = 0; i < size; i++)
+				if (vinhos[i].ano_colheita == ano_colheita)
+					j++;
+			return j;
 		}
 
 		void inserir_vinho(Vinho v)
@@ -112,10 +145,11 @@ public:
 
 	int searchFunctionHash(int profundidade, int i)
 	{
-    int j = pow(2, profundidade) - 1;
-    int k = i & j;
-    if(k > qtdPonteiros) return -1;
-    return k; 
+		int j = pow(2, profundidade) - 1;
+		int k = i & j;
+		if (k > qtdPonteiros)
+			return -1;
+		return k;
 	}
 
 	Hash *duplicarDiretorio()
@@ -155,7 +189,7 @@ public:
 		while (i < bucketAtual->size)
 		{
 			posHash = searchFunctionHash(novaProfundidadeLocal, bucketAtual->vinhos[i].ano_colheita);
-      
+
 			if (posHash == posHashAtual)
 			{
 				i++;
@@ -183,10 +217,42 @@ public:
 		}
 	}
 
-	void remove(int ano_colheita)
+	Retorno remove(int ano_colheita)
 	{
-		//int *lsbVinho = toBinary(ano_colheita, true, profGlobal);
-		// int posHash = searchFunctionHash(lsbVinho);
+		Retorno r;
+		int posHash = searchFunctionHash(profGlobal, ano_colheita), posPairHash = 0, novaProfundidade = 0;
+		r.quantidade = hashs[posHash].bucket->removeEmMassa(ano_colheita);
+		r.profundidadeGlobal = profGlobal;
+
+		if (hashs[posHash].bucket->estaVazio())
+		{
+			novaProfundidade = hashs[posHash].bucket->profLocal - 1;
+			r.profundidadeLocal = novaProfundidade;
+
+			if (novaProfundidade == 0)
+				return r;
+
+			posPairHash = searchFunctionHash(novaProfundidade, posHash);
+
+			hashs[posHash].bucket = hashs[posPairHash].bucket;
+
+			hashs[posPairHash].bucket->profLocal = novaProfundidade;
+			hashs[posHash].bucket->profLocal = novaProfundidade;
+		}
+
+		return r;
+	}
+
+	Retorno search(int ano_colheita)
+	{
+		Retorno r;
+		int posHash = searchFunctionHash(profGlobal, ano_colheita);
+
+		r.quantidade = hashs[posHash].bucket->coutVinhos(ano_colheita);
+		r.profundidadeGlobal = profGlobal;
+		r.profundidadeLocal = hashs[posHash].bucket->profLocal;
+
+		return r;
 	}
 
 	void insert_recursive(Vinho v, int posHash)
@@ -207,13 +273,19 @@ public:
 		}
 	}
 
-	void insert(int id, int ano_colheita, string rotulo, string tipo)
+	Retorno insert(int id, int ano_colheita, string rotulo, string tipo)
 	{
+		Retorno r;
 		Vinho v = createVinho(id, ano_colheita, rotulo, tipo);
 
 		int posHash = searchFunctionHash(profGlobal, ano_colheita);
-		
+
 		insert_recursive(v, posHash);
+
+		r.profundidadeGlobal = profGlobal;
+		r.profundidadeLocal = hashs[posHash].bucket->profLocal;
+		r.quantidade = 1;
+		return r;
 	}
 };
 
@@ -248,7 +320,6 @@ int main()
 		}
 	}
 
-	d.percorrerBuckets();
 	ip.close();
 	return 0;
 }

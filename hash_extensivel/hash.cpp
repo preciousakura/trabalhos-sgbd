@@ -321,7 +321,7 @@ int main()
 			d.insert(stoi(vinho_id), stoi(ano_colheita), rotulo, tipo);
 		}
 	}
-
+	
 	d.percorrerBuckets();
 	ip.close();
 	return 0;
