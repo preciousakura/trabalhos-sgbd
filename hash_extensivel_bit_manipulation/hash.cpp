@@ -16,17 +16,13 @@ class Diretorio
 public:
 	typedef struct Retorno
 	{
-		int profundidadeGlobal;
-		int profundidadeLocal;
-		int quantidade;
+		int profundidadeGlobal, profundidadeLocal, quantidade;
 	} Retorno;
 
 	typedef struct Vinho
 	{
-		int id;
-		int ano_colheita;
-		string rotulo;
-		string tipo;
+		int id, ano_colheita;
+		string rotulo, tipo;
 	} Vinho;
 
 	class Bucket
@@ -113,16 +109,13 @@ public:
 		hashs = new Hash[qtdPonteiros];
 
 		for (int i = 0; i < qtdPonteiros; i++)
-		{ // inicializando buckets
 			hashs[i] = criar_hash(criar_bucket(profGlobal));
-		}
 	}
 
 	Bucket *criar_bucket(int profundidade)
 	{
 		Bucket *b = new Bucket;
 		b->profLocal = profundidade;
-
 		return b;
 	}
 
@@ -154,17 +147,13 @@ public:
 
 	Hash *duplicarDiretorio()
 	{
-		int novaProfGlobal = profGlobal + 1, posHash = 0;
-		int novaQtdPonteiros = pow(2, novaProfGlobal);
-
+		int novaProfGlobal = profGlobal + 1, posHash = 0, novaQtdPonteiros = pow(2, novaProfGlobal);
 		Hash *novosHash = new Hash[novaQtdPonteiros];
 
 		for (int i = 0; i < novaQtdPonteiros; i++)
 		{
 			if (i < qtdPonteiros)
-			{
 				novosHash[i] = hashs[i];
-			}
 			else
 			{
 				posHash = searchFunctionHash(profGlobal, i);
@@ -285,6 +274,7 @@ public:
 		r.profundidadeGlobal = profGlobal;
 		r.profundidadeLocal = hashs[posHash].bucket->profLocal;
 		r.quantidade = 1;
+
 		return r;
 	}
 };
@@ -300,10 +290,7 @@ int main()
 		return 0;
 	}
 
-	string vinho_id;
-	string rotulo;
-	string ano_colheita;
-	string tipo;
+	string vinho_id, rotulo, ano_colheita, tipo;
 
 	getline(ip, vinho_id); // pegar primeira linha do arquivo
 
@@ -315,9 +302,7 @@ int main()
 		getline(ip, tipo);
 
 		if (vinho_id != "")
-		{
 			d.insert(stoi(vinho_id), stoi(ano_colheita), rotulo, tipo);
-		}
 	}
 
 	ip.close();
