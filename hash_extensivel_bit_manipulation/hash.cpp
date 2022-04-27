@@ -62,6 +62,8 @@ public:
 
 		int removeEmMassa(int ano_colheita)
 		{
+			if(size == 0) return 0;
+			
 			int count = 0, i = 0;
 			while (i < size)
 			{
@@ -216,10 +218,13 @@ public:
 		if (hashs[posHash].bucket->estaVazio())
 		{
 			novaProfundidade = hashs[posHash].bucket->profLocal - 1;
-			r.profundidadeLocal = novaProfundidade;
-
-			if (novaProfundidade == 0)
+			if (novaProfundidade < 1) 
+			{
+				r.profundidadeLocal = 0;
 				return r;
+			}
+				
+			r.profundidadeLocal = novaProfundidade;
 
 			posPairHash = searchFunctionHash(novaProfundidade, posHash);
 
