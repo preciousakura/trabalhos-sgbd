@@ -63,10 +63,10 @@ public:
 			Vinho v;
 
 			arquivo.open(file_name, ios_base::in);
-			
+
 			string str_change;
 			string vinho_id, rotulo, ano_colheita, tipo;
-			
+
 			int j = 0;
 			while (arquivo.good())
 			{
@@ -76,27 +76,27 @@ public:
 				getline(arquivo, tipo);
 				if (j == i)
 				{
-					str_change = vinho_id+','+rotulo+','+ano_colheita+','+tipo+'\n';
+					str_change = vinho_id + ',' + rotulo + ',' + ano_colheita + ',' + tipo + '\n';
 					v.createVinho(stoi(vinho_id), stoi(ano_colheita), rotulo, tipo);
 					break;
 				}
 				j++;
 			}
-			
+
 			arquivo.close();
-			
+
 			// cópia do conteúdo
 			arquivo.open(file_name, ios_base::in | ios_base::binary | std::ios_base::app);
 			stringstream vinho;
-			
+
 			vinho << arquivo.rdbuf();
-      string str = vinho.str();
-      size_t pos = str.find(str_change);
+			string str = vinho.str();
+			size_t pos = str.find(str_change);
 			str.replace(pos, string(str_change).length(), "");
 			arquivo.close();
-			
+
 			remove(file_name.c_str());
-			
+
 			arquivo.open(file_name, ios_base::out | ios_base::binary | std::ios_base::app);
 			arquivo << str;
 			arquivo.close();
@@ -143,13 +143,13 @@ public:
 		void inserir_vinho(Vinho v)
 		{
 			string text(to_string(v.id) + "," + v.rotulo + "," + to_string(v.ano_colheita) + "," + v.tipo);
-			
+
 			arquivo.open(file_name, std::ios_base::app);
 			arquivo << text << endl;
-      arquivo.close();
-      
-      chaves[size] = v.ano_colheita;
-      size++;
+			arquivo.close();
+
+			chaves[size] = v.ano_colheita;
+			size++;
 		}
 	};
 
@@ -171,17 +171,21 @@ public:
 		for (int i = 0; i < qtdPonteiros; i++)
 			hashs[i] = criar_hash(criar_bucket(profGlobal, i));
 	}
-	
-	bool verifyFileExists(int posHashAtual) {
+
+	bool verifyFileExists(int posHashAtual)
+	{
 		string name = ("buckets/bucket_" + to_string(posHashAtual) + ".txt");
 		ifstream arquivo;
 		arquivo.open(name);
-		if (arquivo.fail()) {
+		if (arquivo.fail())
+		{
 			return false;
-		} return true;
+		}
+		return true;
 	}
-	
-	void copy_file(Bucket* b, int posHashAtual) {
+
+	void copy_file(Bucket *b, int posHashAtual)
+	{
 		string newName = ("buckets/bucket_" + to_string(posHashAtual) + ".txt");
 		rename(b->file_name.c_str(), newName.c_str());
 		b->file_name = newName;
@@ -254,10 +258,10 @@ public:
 				i++;
 				continue;
 			}
-			
- 	  if(!verifyFileExists(posHashAtual))  
-			copy_file(bucketAtual, posHashAtual); 
-			
+
+			if (!verifyFileExists(posHashAtual))
+				copy_file(bucketAtual, posHashAtual);
+
 			if (hashs[posHash].bucket->estaCheio() && hashs[posHash].bucket->hasVinho(i, bucketAtual->chaves[i]))
 				hashs[posHash].bucket = criar_bucket(novaProfundidadeLocal, posHash);
 
@@ -288,13 +292,13 @@ public:
 	{
 		Vinho v;
 		ifstream vinhos_csv("../vinhos.csv");
-		
+
 		int posHash = searchFunctionHash(profGlobal, ano);
 		out.open("out.txt", std::ios_base::app);
-	
+
 		string vinho_id, rotulo, ano_colheita, tipo;
 		getline(vinhos_csv, vinho_id); // pegar primeira linha do arquivo
-		
+
 		int qtd = 0, profL = 0;
 		while (vinhos_csv.good())
 		{
@@ -302,43 +306,47 @@ public:
 			getline(vinhos_csv, rotulo, ',');
 			getline(vinhos_csv, ano_colheita, ',');
 			getline(vinhos_csv, tipo);
-		
-			if (stoi(ano_colheita) == ano) {
+
+			if (stoi(ano_colheita) == ano)
+			{
 				v.createVinho(stoi(vinho_id), ano, rotulo, tipo);
 				insert_recursive(v, posHash);
 				qtd++;
 			}
 		}
-		
-		if(qtd != 0) profL = hashs[posHash].bucket->profLocal;
-		
-		string text("INC:"+to_string(ano)+"/"+to_string(qtd)+','+to_string(profGlobal)+','+to_string(profL));
+
+		if (qtd != 0)
+			profL = hashs[posHash].bucket->profLocal;
+
+		string text("INC:" + to_string(ano) + "/" + to_string(qtd) + ',' + to_string(profGlobal) + ',' + to_string(profL));
 		out << text << endl;
 		vinhos_csv.close();
-    out.close();
+		out.close();
 	}
-	
+
 	void remover(int ano)
 	{
 		out.open("out.txt", std::ios_base::app);
-		
+
 		int posHash = searchFunctionHash(profGlobal, ano), posPairHash = 0, novaProfundidade = 0;
 		int qtd = hashs[posHash].bucket->removeEmMassa(ano), profL = 0;
 
-		if(qtd != 0) profL = hashs[posHash].bucket->profLocal;
-		string text("REM:"+to_string(ano)+"/"+to_string(qtd)+','+to_string(profGlobal)+','+to_string(profL));
+		if (qtd != 0)
+			profL = hashs[posHash].bucket->profLocal;
+		string text("REM:" + to_string(ano) + "/" + to_string(qtd) + ',' + to_string(profGlobal) + ',' + to_string(profL));
 		out << text << endl;
 		out.close();
-		
-		if(qtd == 0 || qtdPonteiros <= 4) return;
-		
+
+		if (qtd == 0 || qtdPonteiros <= 4)
+			return;
+
 		if (hashs[posHash].bucket->estaVazio())
 		{
 			novaProfundidade = hashs[posHash].bucket->profLocal - 1;
 
 			posPairHash = searchFunctionHash(novaProfundidade, posHash);
 			remove(hashs[posHash].bucket->file_name.c_str());
-			
+
 			hashs[posHash].bucket = hashs[posPairHash].bucket;
 			hashs[posHash].bucket->file_name = hashs[posPairHash].bucket->file_name;
 			hashs[posPairHash].bucket->profLocal = novaProfundidade;
@@ -352,7 +360,7 @@ public:
 		int posHash = searchFunctionHash(profGlobal, ano);
 		int qtd = hashs[posHash].bucket->coutVinhos(ano);
 
-		string text("BUS:"+to_string(ano)+"/"+to_string(qtd));
+		string text("BUS:" + to_string(ano) + "/" + to_string(qtd));
 		out << text << endl;
 		out.close();
 	}
@@ -362,19 +370,23 @@ int main()
 {
 	Diretorio d(2);
 	fstream in("in.txt");
-	
+
 	string op, ano;
 	int y = 0;
-	while(in.good()) {
+	while (in.good())
+	{
 		getline(in, op, ':');
 		getline(in, ano);
-		
+
 		y = stoi(ano);
-		
-		if(op == "INC") d.insert(y);
-		else if(op == "REM") d.remover(y);
-		else if(op == "BUS=") d.search(y);
+
+		if (op == "INC")
+			d.insert(y);
+		else if (op == "REM")
+			d.remover(y);
+		else if (op == "BUS=")
+			d.search(y);
 	}
-	
+
 	return 0;
 }
