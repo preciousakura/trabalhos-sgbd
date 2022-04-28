@@ -1,0 +1,13 @@
+170,grim-shiraz,1920,branco
+173,sophisticated-chinon,1920,tinto
+228,warm-sauvignon,1920,tinto
+249,spicy-dolcetto,1920,tinto
+288,amicable-sherry,1920,rosé
+494,jolly-chablis,1920,branco
+523,brass-prosecco,1920,rosé
+573,iron-albariño,1920,tinto
+640,intricate-bardolino,1920,tinto
+644,broad-noir,1920,branco
+796,obvious-banylus,1920,rosé
+842,obvious-merlot,1920,rosé
+971,wooden-burgundy,1920,rosé
