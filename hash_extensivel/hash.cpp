@@ -86,7 +86,7 @@ public:
 			arquivo.close();
 
 			// cópia do conteúdo
-			arquivo.open(file_name, ios_base::in | ios_base::binary | std::ios_base::app);
+			arquivo.open(file_name, ios_base::in);
 			stringstream vinho;
 
 			vinho << arquivo.rdbuf();
@@ -97,7 +97,7 @@ public:
 
 			remove(file_name.c_str());
 
-			arquivo.open(file_name, ios_base::out | ios_base::binary | std::ios_base::app);
+			arquivo.open(file_name, ios_base::out | std::ios_base::app);
 			arquivo << str;
 			arquivo.close();
 			return v;
@@ -105,7 +105,7 @@ public:
 
 		Vinho get_vinho(int i)
 		{
-			Vinho v = read_file(i);
+			Vinho v = read_file(i);	
 			for (int j = i; j < size - 1; j++)
 				chaves[j] = chaves[j + 1];
 			return v;
@@ -115,6 +115,8 @@ public:
 		{
 			if (size == 0)
 				return 0;
+
+				
 
 			int count = 0, i = 0;
 			while (i < size)
@@ -189,7 +191,7 @@ public:
 		string newName = ("buckets/bucket_" + to_string(posHashAtual) + ".txt");
 		rename(b->file_name.c_str(), newName.c_str());
 		b->file_name = newName;
-		b->arquivo.open(b->file_name, ios_base::out | ios_base::binary | std::ios_base::app);
+		b->arquivo.open(b->file_name, ios_base::out);
 		b->arquivo.close();
 	}
 
@@ -198,7 +200,7 @@ public:
 		Bucket *b = new Bucket;
 		b->profLocal = profundidade;
 		b->file_name = "buckets/bucket_" + to_string(n) + ".txt";
-		b->arquivo.open(b->file_name, ios_base::out | ios_base::binary | std::ios_base::app);
+		b->arquivo.open(b->file_name, ios_base::out);
 		b->arquivo.close();
 		return b;
 	}
@@ -294,7 +296,6 @@ public:
 		ifstream vinhos_csv("../vinhos.csv");
 
 		int posHash = searchFunctionHash(profGlobal, ano);
-		out.open("out.txt", std::ios_base::app);
 
 		string vinho_id, rotulo, ano_colheita, tipo;
 		getline(vinhos_csv, vinho_id); // pegar primeira linha do arquivo
@@ -321,13 +322,10 @@ public:
 		string text("INC:" + to_string(ano) + "/" + to_string(qtd) + ',' + to_string(profGlobal) + ',' + to_string(profL));
 		out << text << endl;
 		vinhos_csv.close();
-		out.close();
 	}
 
 	void remover(int ano)
 	{
-		out.open("out.txt", std::ios_base::app);
-
 		int posHash = searchFunctionHash(profGlobal, ano), posPairHash = 0, novaProfundidade = 0;
 		int qtd = hashs[posHash].bucket->removeEmMassa(ano), profL = 0;
 
@@ -335,7 +333,6 @@ public:
 			profL = hashs[posHash].bucket->profLocal;
 		string text("REM:" + to_string(ano) + "/" + to_string(qtd) + ',' + to_string(profGlobal) + ',' + to_string(profL));
 		out << text << endl;
-		out.close();
 
 		if (qtd == 0 || qtdPonteiros <= 4)
 			return;
@@ -356,12 +353,18 @@ public:
 
 	void search(int ano)
 	{
-		out.open("out.txt", std::ios_base::app);
 		int posHash = searchFunctionHash(profGlobal, ano);
 		int qtd = hashs[posHash].bucket->coutVinhos(ano);
 
 		string text("BUS:" + to_string(ano) + "/" + to_string(qtd));
 		out << text << endl;
+	}
+
+	void openOutFile() {
+		out.open("out.txt", ios_base::out);
+	}
+
+	void closeOutFile() {
 		out.close();
 	}
 };
@@ -370,6 +373,7 @@ int main()
 {
 	Diretorio d(2);
 	fstream in("in.txt");
+	d.openOutFile();
 
 	string op, ano;
 	int y = 0;
@@ -387,6 +391,8 @@ int main()
 		else if (op == "BUS=")
 			d.search(y);
 	}
+
+	d.closeOutFile();
 
 	return 0;
 }
