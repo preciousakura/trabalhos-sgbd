@@ -1,0 +1,5 @@
+424,resolving-port,1972,25,2
+454,nullary-chardonnay,1956,3,0
+472,weighted-amarone,1956,3,2
+473,hot-claret,1956,3,0
+486,friendly-merlot,2020,41,1

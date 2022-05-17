@@ -1,0 +1,10 @@
+405,maximum-cabernet,1970,2,0
+414,lower-beaujolais,1978,0,2
+422,national-madeira,2018,71,1
+427,citron-shiraz,1970,2,0
+437,direct-grappa,2002,13,0
+453,central-barolo,2010,28,0
+456,bright-blanc,1970,55,2
+474,ternary-arneis,1970,55,3
+475,molto-port,1978,24,0
+491,concentric-rosé,1978,0,0
