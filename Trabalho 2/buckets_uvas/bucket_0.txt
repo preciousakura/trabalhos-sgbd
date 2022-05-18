@@ -1,0 +1,22 @@
+4,Sultana,branco,1920,1
+6,Riesling,branco,1964,1
+7,Sauvignon Blanc,branco,1920,2
+8,Sauvignon Blanc,branco,2012,0
+16,Viognier,tinto,1980,3
+18,Muscat Hamburg,rosé,1984,3
+22,Chardonnay,tinto,1988,3
+29,Purple Cornichon,rosé,1988,1
+30,Merlot,tinto,1988,3
+31,Sauvignon Blanc,tinto,1972,0
+32,Sauvignon Blanc,rosé,1932,3
+36,Saint Macaire,rosé,1924,2
+49,Flame Seedless,rosé,1944,3
+57,Cabernet Sauvignon,tinto,1972,3
+58,Flame Seedless,rosé,1992,3
+61,Riesling,branco,1984,0
+62,Chardonnay,rosé,1920,0
+63,Muscat Hamburg,tinto,1928,3
+65,Merlot,branco,1964,2
+68,Muscat Hamburg,branco,1964,0
+69,Flame Seedless,rosé,2004,2
+74,Flame Seedless,branco,1960,2

@@ -1,11 +1,14 @@
 #include <string>
+#include <bits/stdc++.h>
+#include <vector>
 
 using namespace std;
 
 typedef struct Vinho
 {
-    string vinho_id, rotulo, uva_id, pais_producao_id;
     int chave;
+    string vinho_id, rotulo, uva_id, pais_producao_id;
+    vector<string> cols = {"vinho_id", "rotulo", "ano_producao", "uva_id", "pais_origem_id"};
 
     void create(string v_id, string r, int ano, string u_id, string p_id)
     {
@@ -14,6 +17,56 @@ typedef struct Vinho
         chave = ano;
         uva_id = u_id;
         pais_producao_id = p_id;
+    }
+
+    vector<int> get_index(vector<string> proj_cols) {
+        vector<int> index;
+        for (int i = 0; i < proj_cols.size(); i++) {
+           for (int j = 0; j < cols.size(); j++) {
+               if(proj_cols[i] == cols[j]) {
+                   index.push_back(i);
+                   continue;
+               }
+           }
+        }
+        return index;
+    }
+
+    vector<string> get_values_projection(vector<string> proj_cols, string fn) {
+        fstream arquivo;
+
+        string value;
+
+        vector<string> proj_values;
+        vector<int> ind = get_index(proj_cols);
+
+        arquivo.open(fn, ios_base::in);
+        string vinho_id,rotulo,ano_producao,uva_id,pais_producao_id;
+        while (arquivo.good())
+        {
+            getline(arquivo, vinho_id, ',');
+            if(vinho_id == "") break;
+
+            getline(arquivo, rotulo, ',');
+            getline(arquivo, ano_producao, ',');
+            getline(arquivo, uva_id, ',');
+            getline(arquivo, pais_producao_id);
+
+            for(int i = 0; i < ind.size(); i++) {
+                if(ind[i] == 0) value =  vinho_id;
+                else if(ind[i] == 1) value += rotulo;
+                else if(ind[i] == 2) value += ano_producao;
+                else if(ind[i] == 3) value += uva_id;
+                else value += pais_producao_id;
+
+                if(i != ind.size() - 1) value += ",";
+            }
+            
+            proj_values.push_back(value);
+        }
+
+        arquivo.close();
+        return proj_values;
     }
 
     Vinho read(string fn, int i, string *str_change) {
@@ -78,6 +131,8 @@ typedef struct Uva
 {
     int chave;
     string uva_id, nome, tipo, pais_origem_id;
+    vector<string> cols = {"uva_id", "nome", "tipo", "ano_colheita", "pais_origem_id"};
+
     void create(string u_id, string nome_uva, string tipo_uva, int ano_colheita_uva, string pais_origem_id_uva)
     {
         uva_id = u_id;
@@ -85,6 +140,56 @@ typedef struct Uva
         tipo = tipo_uva;
         chave = ano_colheita_uva;
         pais_origem_id = pais_origem_id_uva;
+    }
+
+    vector<int> get_index(vector<string> proj_cols) {
+        vector<int> index;
+        for (int i = 0; i < proj_cols.size(); i++) {
+           for (int j = 0; j < cols.size(); j++) {
+               if(proj_cols[i] == cols[j]) {
+                   index.push_back(i);
+                   continue;
+               }
+           }
+        }
+        return index;
+    }
+
+    vector<string> get_values_projection(vector<string> proj_cols, string fn) {
+        fstream arquivo;
+
+        string value;
+
+        vector<string> proj_values;
+        vector<int> ind = get_index(proj_cols);
+
+        arquivo.open(fn, ios_base::in);
+        string u_id, nome_uva, tipo_uva, ano_colheita_uva, pais_origem_id_uva;
+
+        while (arquivo.good())
+        {
+            getline(arquivo, u_id, ',');
+            if(u_id == "") break;
+
+            getline(arquivo, nome_uva, ',');
+            getline(arquivo, tipo_uva, ',');
+            getline(arquivo, ano_colheita_uva, ',');
+            getline(arquivo, pais_origem_id_uva);
+
+            for(int i = 0; i < ind.size(); i++) {
+                if(ind[i] == 0) value =  u_id;
+                else if(ind[i] == 1) value += nome_uva;
+                else if(ind[i] == 2) value += tipo_uva;
+                else if(ind[i] == 3) value += ano_colheita_uva;
+                else value += pais_origem_id_uva;
+
+                if(i != ind.size() - 1) value += ",";
+            }
+            proj_values.push_back(value);
+        }
+
+        arquivo.close();
+        return proj_values;
     }
 
     Uva read(string fn, int i, string *str_change) {
@@ -148,11 +253,60 @@ typedef struct Pais
 {
     int chave;
     string nome, sigla;
+    vector<string> cols = {"pais_id","nome","sigla"};
+
     void create(int pais, string nome_pais, string sigla_pais)
     {
         chave = pais;
         nome = nome_pais;
         sigla = sigla_pais;
+    }
+
+    vector<int> get_index(vector<string> proj_cols) {
+        vector<int> index;
+        for (int i = 0; i < proj_cols.size(); i++) {
+           for (int j = 0; j < cols.size(); j++) {
+               if(proj_cols[i] == cols[j]) {
+                   index.push_back(i);
+                   continue;
+               }
+           }
+        }
+        return index;
+    }
+
+    vector<string> get_values_projection(vector<string> proj_cols, string fn) {
+        fstream arquivo;
+
+        string value;
+
+        vector<string> proj_values;
+        vector<int> ind = get_index(proj_cols);
+
+        arquivo.open(fn, ios_base::in);
+        string id_pais, nome_pais, sigla_pais;
+
+        while (arquivo.good())
+        {
+            getline(arquivo, id_pais, ',');
+            if(id_pais == "") break;
+
+            getline(arquivo, nome_pais, ',');
+            getline(arquivo, sigla_pais);
+
+            for(int i = 0; i < ind.size(); i++) {
+                if(ind[i] == 0) value =  id_pais;
+                else if(ind[i] == 1) value += nome_pais;
+                else if(ind[i] == 2) value += sigla_pais;
+
+                if(i != ind.size() - 1) value += ",";
+            }
+
+            proj_values.push_back(value);
+        }
+
+        arquivo.close();
+        return proj_values;
     }
 
     Pais read(string fn, int i, string *str_change) {

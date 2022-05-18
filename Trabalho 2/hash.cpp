@@ -1,13 +1,9 @@
-#include <bits/stdc++.h>
 #include <math.h>
 #include <fstream>
 #include<direct.h>
 
-#include "esquemas.cpp"
-
-using namespace std;
-
 #define SIZEBUCKET 40
+#include "esquemas.cpp"
 
 template <typename TypeTable>
 class Hash
@@ -100,13 +96,13 @@ public:
 
 	HashS *hashs;
 
-	Hash(int pGlobal, string nfolder)
+	void init(int pGlobal, string nfolder)
 	{
 		profGlobal = pGlobal;
 		qtdPonteiros = pow(2, pGlobal);
 		hashs = new HashS[qtdPonteiros];
 		folder_name = "buckets_"+nfolder;
-		mkdir(folder_name.c_str())
+		mkdir(folder_name.c_str());
 			
 		for (int i = 0; i < qtdPonteiros; i++)
 			hashs[i] = criar_hash(criar_bucket(profGlobal, i));
@@ -249,5 +245,14 @@ public:
 				qtd++;
 			}
 		}
+	}
+
+	string get_tuplas() {
+		TypeTable v;
+		string fn = "buckets_vinhos/bucket_124.txt";
+		vector<string> sa = {"uva_id", "rotulo"};
+		vector<string> sad = v.get_values_projection(sa , fn);
+
+		for(int i = 0; i < sad.size(); i++) cout << sad[i] << endl;
 	}
 };

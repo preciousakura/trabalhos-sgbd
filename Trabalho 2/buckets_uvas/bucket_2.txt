@@ -1,0 +1,17 @@
+0,Sauvignon Blanc,branco,1974,0
+9,Muscat Hamburg,rosé,1922,3
+21,Cabernet Sauvignon,tinto,1930,2
+23,Viognier,tinto,1950,2
+24,Merlot,tinto,1974,2
+26,Sultana,tinto,1954,2
+28,Chardonnay,tinto,2010,2
+33,Sultana,rosé,1986,1
+34,Chardonnay,rosé,1954,1
+39,Flame Seedless,rosé,1954,3
+43,Saint Macaire,branco,1954,2
+48,Cabernet Sauvignon,tinto,1946,3
+52,Cabernet Sauvignon,tinto,1954,2
+56,Viognier,rosé,1910,2
+66,Flame Seedless,rosé,1954,1
+67,Cabernet Sauvignon,rosé,1958,3
+71,Ruby Seedless,tinto,2014,0

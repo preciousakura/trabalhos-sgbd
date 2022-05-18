@@ -1,0 +1,20 @@
+2,Viognier,rosé,1965,0
+3,Riesling,branco,1953,1
+5,Saint Macaire,branco,1913,3
+11,Flame Seedless,branco,1993,0
+12,Muscat Hamburg,rosé,1913,2
+13,Muscat Hamburg,tinto,2001,1
+14,Saint Macaire,branco,1973,1
+19,Chardonnay,tinto,1945,1
+20,Ruby Seedless,branco,1957,3
+35,Chardonnay,tinto,1941,1
+38,Riesling,tinto,1913,3
+42,Viognier,rosé,1989,3
+46,Purple Cornichon,tinto,2013,0
+47,Riesling,branco,1913,2
+50,Purple Cornichon,rosé,1989,2
+55,Sultana,rosé,1965,2
+59,Chardonnay,tinto,1937,2
+60,Chardonnay,rosé,1957,3
+70,Cabernet Sauvignon,rosé,1977,3
+72,Ruby Seedless,rosé,2013,0
