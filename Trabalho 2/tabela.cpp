@@ -112,6 +112,10 @@ class Tabela {
             }
         }
 
+        int f_hash2(vector<string> cols) {
+            //for(string c : cols) 
+        }
+
         void remover_duplicatas() {
             fstream arquivo, atual_page;
 
@@ -126,16 +130,29 @@ class Tabela {
             for(int i = 0; i < NUM_PARTICOES; i++) { // percorre partições
                 if(h[i].qtd_elementos == 0 && h[i].qtd_paginas == 0) // partição vazia
                     continue;
-                
-                if(num_elementos_saida == MAXTUPLAS) // entrar no modo checagem
-                arquivo.open("buckets_"+type_table_name+"/bucket_"+to_string(i)+"_pagina_"+to_string(i_page_entrada)+".txt"); // arquivo de entrada
-                while(getline(arquivo, line)) {
-                    Tupla t;
-                    col_values = esquema.read_line(line);
-                    pags[0].set_tupla(t); // página de entrada
+
+                for(int j = 0; j <= h[i].qtd_paginas; j++) {
+                    arquivo.open("buckets_"+type_table_name+"/bucket_"+to_string(i)+"_pagina_"+to_string(j)+".txt", ios_base::in); // arquivo de entrada
+                    while(getline(arquivo, line)) {
+                        Tupla t;
+                        col_values = esquema.read_line(line);
+                        pags[0].set_tupla(t); // página de entrada
+                    }
+
+                    vector<Tupla> tuplas = pags[0].get_tuplas(); // tuplas página de entrada
+
+                    // criar novo hash
+                    Hash hash_to_bucket[NUM_PARTICOES];
+
+                    // aplicar h2 aos elementos da página
+                    // pegar todos os elementos não iguais
+                    // colocá-los na página de saída, 
+                    // se a página de saída não tiver cheia, pular para próxima página de entrada
+                    // se a página de saída estiver cheia, realizar a checagem com todos as páginas restantes;
+
+                    ++io;
+                    arquivo.close();
                 }
-                ++io;
-                arquivo.close();
             }
         }
 
