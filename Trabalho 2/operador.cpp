@@ -14,8 +14,10 @@ class Operador {
             tabela.particionamento(proj_cols);
             tabela.remover_duplicatas();
         }
-        int numPagsGeradas() { return 0; }
+        int numPagsGeradas() { return tabela.get_num_pages(); }
         int numIOExecutados() { return tabela.get_io(); }
-        int numTuplasGeradas() { return 0; }
-        void salvarTuplasGeradas(string fn) {}
+        int numTuplasGeradas() { return tabela.get_num_tuplas(); }
+        void salvarTuplasGeradas(string fn) {
+            tabela.save_on_file(fn);
+        }
 };

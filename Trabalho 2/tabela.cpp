@@ -9,7 +9,7 @@ class Tabela {
     private:
         Esquema esquema;
         string type_table_name;
-        int qtd_pags = 0, io = 0, qtd_pags_saida = 0;
+        int qtd_pags = 0, io = 0, qtd_pags_saida = 0, qtd_tuplas_geradas = 0;
 
         typedef struct Hash {
             vector<int> h_id;
@@ -121,11 +121,12 @@ class Tabela {
         }
 
         void remover_duplicatas() {
+            Hash new_h[NUM_PARTICOES];
             fstream arquivo, atual_page, check_page;
 
             string line;
             vector<string> col_values;
-            int page_bucket = 0;
+            int page_bucket;
 
             for(int i = 0; i < NUM_PARTICOES; i++) { // percorre partições
                 if(h[i].qtd_elementos == 0 && h[i].qtd_paginas == 0) // partição vazia
@@ -133,6 +134,7 @@ class Tabela {
 
                 page_bucket = 0;
                 Pagina pagina_saida; // pags[1]
+
                 for(int j = 0; j <= h[i].qtd_paginas; j++) { // percorre as páginas do bucket
                     Pagina pagina_entrada; // pags[0]
 
@@ -142,7 +144,6 @@ class Tabela {
                         col_values = esquema.read_line(line);
                         for(string col : col_values) t.set_tupla(col); 
                         pagina_entrada.set_tupla(t);
-                        
                     }
 
                     vector<Tupla> tuplas = pagina_entrada.get_tuplas(); // tuplas página de entrada
@@ -155,14 +156,48 @@ class Tabela {
                         vector<string> colunas = t.get_cols();
                         int h_index = f_hash2(colunas);
 
-                        if(!pagina_saida.has_tupla(t)) {
-                            pagina_saida.set_tupla(t);
-                            hash_to_bucket[h_index].h_id.push_back(p);
-                            hash_to_bucket[h_index].qtd_elementos++;
-                        }
-
                         if(page_bucket > 0) { // comparar com páginas de saída já salvas em disco
+                            if(!pagina_saida.has_tupla(t)) {
+                                bool has_on_disk = false;
+                                Pagina pagina_checkagem; // pags[2]
+                                for(int g = 0; g < page_bucket; g++) {
+                                    check_page.open("buckets_"+type_table_name+"/bucket_"+to_string(i)+"_pagina_"+to_string(g)+".txt", ios_base::in); // arquivo de entrada
+                                    while(getline(check_page, line)) {
+                                        Tupla t_check;
+                                        col_values = esquema.read_line(line);
+                                        for(string col : col_values) t_check.set_tupla(col); 
+                                        pagina_checkagem.set_tupla(t_check);
+                                    }
 
+                                    check_page.close();
+                                    ++io;
+                                    
+                                    if(pagina_checkagem.has_tupla(t)) { 
+                                        has_on_disk = true;
+                                        break;
+                                    }
+                                    
+                                }
+                                if(!has_on_disk) {
+                                    pagina_saida.set_tupla(t);
+                                    hash_to_bucket[h_index].h_id.push_back(p);
+                                    hash_to_bucket[h_index].qtd_elementos++;
+
+                                    new_h[i].qtd_elementos++;
+
+                                    qtd_tuplas_geradas++;
+                                }
+                            }
+                        } else {
+                            if(!pagina_saida.has_tupla(t)) {
+                                pagina_saida.set_tupla(t);
+                                hash_to_bucket[h_index].h_id.push_back(p);
+                                hash_to_bucket[h_index].qtd_elementos++;
+
+                                new_h[i].qtd_elementos++;
+
+                                qtd_tuplas_geradas++;
+                            }
                         }
 
                         if(pagina_saida.page_full())  {
@@ -176,24 +211,66 @@ class Tabela {
                                     if(k != pagina_saida_colunas.size() - 1) text += ',';
                                 }
                                 atual_page << text << endl;
-                                
                             }
+
+                            new_h[i].qtd_paginas++;
+
                             atual_page.close();
                             ++io;
                             ++qtd_pags_saida;
                             ++page_bucket;
                             pagina_saida.zerar_pagina(); // pags[1] zera a página de saída;
                         }
-                            
                         p++;
                     } 
                     ++io;
                     arquivo.close();
+                    remove(("buckets_"+type_table_name+"/bucket_"+to_string(i)+"_pagina_"+to_string(j)+".txt").c_str());
                 }
-                pagina_saida.ver_tuplas();
-                cout << endl;
+
+                if(pagina_saida.get_tuplas().size() < MAXTUPLAS) {
+                    atual_page.open("buckets_"+type_table_name+"/bucket_"+to_string(i)+"_pagina_"+to_string(page_bucket)+".txt", std::ios_base::out);
+                    vector<Tupla> pagina_saida_tuplas = pagina_saida.get_tuplas();
+                    for(Tupla pagina_saida_t : pagina_saida_tuplas) {
+                        vector<string> pagina_saida_colunas = pagina_saida_t.get_cols();
+                        string text;
+                        for(int k = 0; k < pagina_saida_colunas.size(); k++) {
+                            text += pagina_saida_colunas[k];
+                            if(k != pagina_saida_colunas.size() - 1) text += ',';
+                        }
+                        atual_page << text << endl;
+                    }
+
+                    new_h[i].qtd_paginas++;
+
+                    atual_page.close();
+                    ++io;
+                    ++qtd_pags_saida;
+                }
             }
+            
+            for(int i = 0; i < NUM_PARTICOES; i++) h[i] = new_h[i];
         }
 
         int get_io() { return io; }
+
+        int get_num_pages() { return qtd_pags_saida; }
+
+        int get_num_tuplas() { return qtd_tuplas_geradas; }
+
+        void save_on_file(string fn) {
+            string line;
+            fstream out_arquivo, arquivo;
+            out_arquivo.open(fn+".txt", std::ios_base::out);
+            for(int i = 0; i < NUM_PARTICOES; i++) {
+                for(int j = 0; j < h[i].qtd_paginas; j++) {
+                    arquivo.open("buckets_"+type_table_name+"/bucket_"+to_string(i)+"_pagina_"+to_string(j)+".txt", ios_base::in);
+                    while(getline(arquivo, line)) {
+                        out_arquivo << line << endl;
+                    }
+                    arquivo.close();
+                }
+            }
+            out_arquivo.close();
+        }
 };
