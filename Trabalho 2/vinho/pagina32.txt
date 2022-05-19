@@ -1,0 +1,12 @@
+384,persistent-albariño,1924,9,2
+385,factorial-chablis,1970,55,1
+386,ebony-chianti,1996,29,0
+387,coplanar-prosecco,1920,4,1
+388,perfect-chianti,1934,32,2
+389,freezing-port,1912,64,0
+390,rosy-prosecco,2006,17,1
+391,chalky-amarone,1952,48,3
+392,heather-dolcetto,1920,10,0
+393,closed-merlot,1972,25,1
+394,frigid-chianti,1920,62,2
+395,inventive-zinfandel,1994,58,2

@@ -1,0 +1,12 @@
+12,Muscat Hamburg,rosé,1913,2
+13,Muscat Hamburg,tinto,2001,1
+14,Saint Macaire,branco,1973,1
+15,Ruby Seedless,tinto,1987,0
+16,Viognier,tinto,1980,3
+17,Cabernet Sauvignon,branco,2003,1
+18,Muscat Hamburg,rosé,1984,3
+19,Chardonnay,tinto,1945,1
+20,Ruby Seedless,branco,1957,3
+21,Cabernet Sauvignon,tinto,1930,2
+22,Chardonnay,tinto,1988,3
+23,Viognier,tinto,1950,2

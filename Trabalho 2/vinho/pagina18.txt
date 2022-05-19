@@ -1,0 +1,12 @@
+216,brutal-burgundy,1916,12,0
+217,red-mead,1996,11,3
+218,poky-port,1912,45,2
+219,coherent-chablis,1948,1,0
+220,silver-malbec,1958,34,1
+221,intense-chardonnay,1920,7,3
+222,critical-amarone,1972,25,2
+223,breezy-chablis,1920,73,2
+224,central-madeira,1992,33,0
+225,curious-banylus,1968,6,3
+226,curious-malbec,1966,67,3
+227,kind-rosé,1974,57,1

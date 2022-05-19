@@ -1,31 +1,21 @@
-template <typename TypeTable>
+#include "tabela.cpp"
+
 class Operador {
     private:
-        Tabela<TypeTable> *tabela;
-        string* colunas;
+        Tabela tabela;
+        vector<string> proj_cols;
     public:
-    Operador(Tabela<TypeTable> & table, string *cols) 
-    {
-        tabela = &table;
-    };
-
-    void executar() {
-        cout << tabela->get_tuplas();
-    }
-
-    void salvarTuplasGeradas(string file_name) {
-
-    }
-
-    int numPagsGeradas() {
-
-    } 
-
-    int numIOExecutados() {
-
-    }
-
-    int numTuplasGeradas() {
-
-    }
+        Operador() {}
+        Operador(Tabela tb, vector<string> cols) {
+            tabela = tb;
+            for(string c : cols) proj_cols.push_back(c);
+        }
+        void executar() {
+            tabela.particionamento(proj_cols);
+            tabela.remover_duplicatas();
+        }
+        int numPagsGeradas() { return 0; }
+        int numIOExecutados() { return tabela.get_io(); }
+        int numTuplasGeradas() { return 0; }
+        void salvarTuplasGeradas(string fn) {}
 };

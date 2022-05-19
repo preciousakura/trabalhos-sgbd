@@ -1,0 +1,12 @@
+24,big-barbaresco,1934,37,3
+25,oscillating-dolcetto,1978,24,1
+26,cold-marsanne,2006,17,1
+27,threaded-chablis,1968,65,1
+28,charcoal-arneis,1988,53,3
+29,chilly-chardonnay,1958,34,2
+30,funny-barbaresco,1964,60,1
+31,internal-bardolino,1928,40,3
+32,flat-claret,1934,32,1
+33,iron-marsanne,1966,67,0
+34,weathered-marsanne,1934,32,1
+35,warm-champagne,2002,13,1

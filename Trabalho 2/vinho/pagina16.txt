@@ -1,0 +1,12 @@
+192,creative-arneis,1968,68,3
+193,either-madeira,1956,3,1
+194,laminated-chinon,1994,15,3
+195,wan-noir,1950,23,0
+196,orthogonal-muscat,1948,1,2
+197,ragged-albariño,1974,31,0
+198,silver-banylus,1950,23,0
+199,freezing-blanc,1996,11,0
+200,objective-arneis,1948,49,0
+201,rounded-zinfandel,1958,34,2
+202,oscillating-blanc,1934,32,2
+203,district-beaujolais,1934,32,3

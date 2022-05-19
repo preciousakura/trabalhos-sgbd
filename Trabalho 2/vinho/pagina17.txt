@@ -1,0 +1,12 @@
+204,rapid-grappa,1964,60,1
+205,flat-arneis,1998,50,2
+206,bent-champagne,1998,42,2
+207,sunny-chianti,1996,11,1
+208,dark-bardolino,1958,66,2
+209,violent-sherry,1912,64,0
+210,coplanar-blanc,1934,32,0
+211,kinetic-burgundy,1958,39,1
+212,presto-moscato,1920,73,3
+213,roaring-cabernet,1998,42,3
+214,rude-moscato,1958,43,1
+215,freezing-chianti,2010,28,1

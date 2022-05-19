@@ -1,0 +1,12 @@
+444,claret-burgundy,1948,49,1
+445,each-moscato,1996,29,3
+446,gilded-port,1998,50,0
+447,genteel-arneis,1920,62,2
+448,gravitational-dolcetto,2014,51,3
+449,elegant-pinot,1934,37,1
+450,chartreuse-chardonnay,1996,29,0
+451,bold-zinfandel,1998,50,3
+452,chilly-chablis,1920,4,0
+453,central-barolo,2010,28,0
+454,nullary-chardonnay,1956,3,0
+455,scared-blanc,1924,9,2

@@ -1,0 +1,12 @@
+84,silver-marsanne,1958,66,2
+85,kind-chianti,1912,45,3
+86,bone-chianti,1950,23,3
+87,relaxed-barbaresco,1974,31,0
+88,ebony-prosecco,2016,46,3
+89,champagne-sauvignon,1996,22,2
+90,inflammable-beaujolais,1968,65,1
+91,breezy-port,1958,26,0
+92,ordered-burgundy,1948,1,0
+93,brave-riesling,1980,16,1
+94,creamy-muscat,1934,32,3
+95,absolute-sauvignon,2014,8,1

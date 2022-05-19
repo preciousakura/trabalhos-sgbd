@@ -1,0 +1,12 @@
+72,human-burgundy,1950,23,0
+73,iron-albariño,1912,45,3
+74,annoying-rosé,1958,52,1
+75,staccato-rosé,1944,59,2
+76,plum-grappa,1920,62,0
+77,jolly-rosé,1974,31,0
+78,crunchy-chablis,1934,32,1
+79,muted-marsanne,1958,66,2
+80,wan-sauvignon,2006,17,3
+81,isomorphic-albariño,1978,24,2
+82,intricate-lambrusco,1988,53,1
+83,balanced-amarone,1974,57,1

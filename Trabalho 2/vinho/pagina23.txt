@@ -1,0 +1,12 @@
+276,optical-blanc,1920,4,3
+277,weary-albariño,1958,34,2
+278,purple-muscat,1960,74,2
+279,buoyant-cabernet,2006,17,2
+280,molten-riesling,2014,8,1
+281,wicker-auslese,1920,73,1
+282,planar-chianti,1974,57,2
+283,chamfered-pinot,1980,16,2
+284,radial-pinot,1968,6,2
+285,dry-riesling,1912,45,3
+286,proper-lambrusco,1916,12,1
+287,product-rosé,1958,39,3

@@ -1,0 +1,12 @@
+264,energetic-rosé,1978,24,2
+265,cold-madeira,2014,51,2
+266,heather-chianti,1958,52,0
+267,hot-grappa,1996,22,0
+268,direct-chablis,1994,15,0
+269,faded-amarone,1910,56,0
+270,swift-chianti,1916,38,2
+271,taxonomic-banylus,1958,52,2
+272,metal-moscato,2020,41,1
+273,crabby-shiraz,1974,57,1
+274,new-mead,1916,38,0
+275,bounded-merlot,2002,13,3
