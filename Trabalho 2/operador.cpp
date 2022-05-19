@@ -18,6 +18,15 @@ class Operador {
         int numIOExecutados() { return tabela.get_io(); }
         int numTuplasGeradas() { return tabela.get_num_tuplas(); }
         void salvarTuplasGeradas(string fn) {
+            fstream out_arquivo;
+            string text;
+            out_arquivo.open(fn, ios::out);
+            for(int i = 0; i < proj_cols.size(); i++) {
+                text+= proj_cols[i];
+                if(i != proj_cols.size() - 1) text+= ',';
+            }
+            out_arquivo << text << endl;
+            out_arquivo.close();
             tabela.save_on_file(fn);
         }
 };

@@ -261,7 +261,7 @@ class Tabela {
         void save_on_file(string fn) {
             string line;
             fstream out_arquivo, arquivo;
-            out_arquivo.open(fn+".txt", std::ios_base::out);
+            out_arquivo.open(fn, ios::app);
             for(int i = 0; i < NUM_PARTICOES; i++) {
                 for(int j = 0; j < h[i].qtd_paginas; j++) {
                     arquivo.open("buckets_"+type_table_name+"/bucket_"+to_string(i)+"_pagina_"+to_string(j)+".txt", ios_base::in);
