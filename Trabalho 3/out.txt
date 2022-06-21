@@ -1,0 +1,10 @@
+--- Output ---
+
+Arestas do Grafo { }, Lista do item de dado rollback { }
+Arestas do Grafo { }, Lista do item de dado rollback { }
+Arestas do Grafo { }
+Arestas do Grafo { }
+Arestas do Grafo { T1->T2 }
+Arestas do Grafo { T1->T2 }
+Arestas do Grafo { }
+Arestas do Grafo { }

@@ -2,11 +2,26 @@
 
 using namespace std;
 
+typedef struct Wait_Q_Data {
+    string file, type, tr_id;
+} Wait_Q_Data;
+
+typedef struct Op {
+    string file, type;
+} Op;
+
 typedef struct Tr {
     int timestamp;
     string id_tr;
-    unordered_map<string, string> types_lock;
-    bool waiting = false;
+    string state;
+    vector<string> wait_for_list_ids;
+    vector<Op> ops;
+
+    bool has_lock(string type, string file) {
+        for(Op op: ops) {
+            if(op.type == type && op.file == file) return true;
+        } return false;
+    }
 } Tr;
 
 typedef struct Lock {

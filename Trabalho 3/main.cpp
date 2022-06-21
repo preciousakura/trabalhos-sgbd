@@ -40,7 +40,16 @@ int main() {
         cout << df.type_op << ',' << df.file << ',' << df.id_tr << endl;
         tr_manager.readType(df.type_op, df.file, df.id_tr);
     }
-    arquivo.close();
 
+    cout << endl;
+
+    while(tr_manager.lock_manager.wait_q_data.size() > 0) {
+        tr_manager.lock_manager.run_waiting_list();
+        cout << endl;
+    }
+
+    tr_manager.lock_manager.run_rollback_list();
+
+    arquivo.close();
     return 0;
 }
