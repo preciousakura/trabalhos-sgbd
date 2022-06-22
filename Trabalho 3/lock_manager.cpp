@@ -380,7 +380,7 @@ class Lock_Manager {
                 return;
             }
 
-                        // mudar lock_table quando já tem um bloqueio compartilhado da mesma transação em cima do mesmo item
+            // mudar lock_table quando já tem um bloqueio compartilhado da mesma transação em cima do mesmo item
             if(tr->ops.size() > 0) {
                 if(tr->has_op("S", file)) 
                     change_lock(file, "S", tr->id_tr, "X"); // editar a lock_table
