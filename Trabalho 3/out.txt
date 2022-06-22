@@ -1,6 +1,7 @@
 --- Output ---
 
 Protocolo aplicado: WOUND-WAIT
+
 BT(1): Arestas do Grafo { }, SEM ROLLBACK
 r1(x): Arestas do Grafo { }, SEM ROLLBACK
 BT(2): Arestas do Grafo { }, SEM ROLLBACK
