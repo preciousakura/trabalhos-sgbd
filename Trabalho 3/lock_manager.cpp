@@ -294,6 +294,30 @@ class Lock_Manager {
 
             lock_table_file.close();
             for(string s:str_change) update_lock_table(s, "");
+        }
+
+        void change_lock(string file, string type_lock, string id_tr, string change_to) {
+            string str_change;
+            lock_table_file.open("lock_table_file.txt",  std::ios_base::in);
+
+            string tr_id_lock, type_lock_in_table, file_in_lock_table;
+            
+            while(lock_table_file.good()) {
+                getline(lock_table_file, tr_id_lock, ',');
+                getline(lock_table_file, type_lock_in_table, ',');
+                getline(lock_table_file, file_in_lock_table);
+                
+                if(tr_id_lock == "" || type_lock_in_table == "" || file_in_lock_table == "") break;
+
+                if(file == file_in_lock_table && type_lock_in_table == type_lock && tr_id_lock == id_tr) {
+                    str_change = tr_id_lock + ',' + type_lock_in_table + ',' + file_in_lock_table + '\n';
+                    break;
+                }
+            }
+            
+            lock_table_file.close();
+            string new_lock = tr_id_lock + ',' + change_to + ',' + file_in_lock_table + '\n';
+            update_lock_table(str_change, new_lock);
         }   
 
         void ls(Tr *tr, string file, string type) {
@@ -341,16 +365,6 @@ class Lock_Manager {
             }
 
             vector<string> trs_conflitantes;
-            if(tr->ops.size() > 0) {
-                if(tr->has_op("S", file)) { // editar a lock_table
-                    trs_conflitantes = hasLock(file, "S", tr->id_tr);
-                    if(trs_conflitantes.size() > 0) {
-                        if(!protocol) protocol_wait_die(tr, trs_conflitantes, file, "X");
-                        else protocol_wound_wait(tr, trs_conflitantes, file, "X");
-                        return;
-                    }
-                } 
-            }
 
             trs_conflitantes = hasLock(file, "X", tr->id_tr);
             if(trs_conflitantes.size() > 0) {
@@ -363,6 +377,17 @@ class Lock_Manager {
             if(trs_conflitantes.size() > 0) {
                 if(!protocol) protocol_wait_die(tr, trs_conflitantes, file, "X");
                 else protocol_wound_wait(tr, trs_conflitantes, file, "X");
+                return;
+            }
+
+                        // mudar lock_table quando já tem um bloqueio compartilhado da mesma transação em cima do mesmo item
+            if(tr->ops.size() > 0) {
+                if(tr->has_op("S", file)) 
+                    change_lock(file, "S", tr->id_tr, "X"); // editar a lock_table
+                
+                print_op(type, file, tr->id_tr);
+                print_nrollback("OK");
+
                 return;
             }
 
