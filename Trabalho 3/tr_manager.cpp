@@ -15,7 +15,7 @@ class Tr_Manager {
             out.open("out.txt", std::ios_base::out);
             out << "--- Output ---" << endl << endl;
             out << "Protocolo aplicado: ";
-            if(lock_manager.protocol) out << "WAIT-DIE";
+            if(!lock_manager.protocol) out << "WAIT-DIE";
             else out << "WOUND-WAIT";
             out << endl << endl;
             out.close();
@@ -73,7 +73,7 @@ class Tr_Manager {
             lock_manager.num_of_trs = transactions.size();
 
             out.open("out.txt", std::ios_base::app);
-            out << "BT(" << id_tr << "): Arestas do Grafo { }, SEM ROLLBACK" << endl;
+            out << "BT(" << id_tr << "): Arestas do Grafo { }, OK" << endl;
             out.close();
         }
 };

@@ -2,26 +2,27 @@
 
 Protocolo aplicado: WOUND-WAIT
 
-BT(1): Arestas do Grafo { }, SEM ROLLBACK
-r1(x): Arestas do Grafo { }, SEM ROLLBACK
-BT(2): Arestas do Grafo { }, SEM ROLLBACK
-r2(x): Arestas do Grafo { }, SEM ROLLBACK
-r2(y): Arestas do Grafo { T2->T1 }, SEM ROLLBACK
-r2(y): Arestas do Grafo { T2->T1 }, SEM ROLLBACK
-r1(y): Arestas do Grafo { T2->T1 }, SEM ROLLBACK
-C(1): Arestas do Grafo { }, SEM ROLLBACK
-r2(z): Arestas do Grafo { }, SEM ROLLBACK
-r2(z): Arestas do Grafo { }, SEM ROLLBACK
-C(2): Arestas do Grafo { }, SEM ROLLBACK
-C(2): Arestas do Grafo { }, SEM ROLLBACK
+BT(1): Arestas do Grafo { }, OK
+BT(2): Arestas do Grafo { }, OK
+BT(3): Arestas do Grafo { }, OK
+r1(a): Arestas do Grafo { }, OK
+r3(a): Arestas do Grafo { }, OK
+w3(a): Arestas do Grafo { }, Lista do item a { }
+w2(a): Arestas do Grafo { T2->T1 }, EM ESPERA
+w1(b): Arestas do Grafo { T2->T1 }, OK
+r1(b): Arestas do Grafo { T2->T1 }, OK
+r2(a): Arestas do Grafo { T2->T1 }, EM ESPERA
+C(1): Arestas do Grafo { }, OK
+C(2): Arestas do Grafo { }, EM ESPERA
+C(3): Arestas do Grafo { }, ROLLBACK
 
 Comandos em espera:
-r2(x): Arestas do Grafo { }, SEM ROLLBACK
-r2(y): Arestas do Grafo { }, SEM ROLLBACK
-r2(z): Arestas do Grafo { }, SEM ROLLBACK
-C(2): Arestas do Grafo { }, SEM ROLLBACK
+w2(a): Arestas do Grafo { }, OK
+r2(a): Arestas do Grafo { }, OK
+C(2): Arestas do Grafo { }, OK
 
 Transacoes que sofreram rollback:
-Lista vazia
+r3(a): Arestas do Grafo { }, OK
+C(3): Arestas do Grafo { }, OK
 
 História Finalizada

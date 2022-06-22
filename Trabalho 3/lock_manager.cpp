@@ -42,15 +42,6 @@ class Lock_Manager {
             else if(type == "C") u(tr);
         }
 
-        void remove_rollback_q(string id_tr) {
-            for(int i = 0; i < rollback_q.size(); i++) {
-                if(id_tr == rollback_q[i]) {
-                    rollback_q.erase(rollback_q.begin() + i);
-                    return;
-                }
-            }
-        }
-
         void remove_wait_q_file(string id_tr, string file) {
             for(int i = 0; i < wait_q_by_file[file].size(); i++) 
                 if(get<1>(wait_q_by_file[file][i]) == id_tr) 
@@ -66,9 +57,9 @@ class Lock_Manager {
             }
         }
 
-        void print_nrollback() {
+        void print_nrollback(string text) {
             out.open("out.txt", std::ios_base::app);
-            out << "SEM ROLLBACK" << endl;
+            out << text << endl;
             out.close();
         }
 
@@ -100,14 +91,16 @@ class Lock_Manager {
             
             out.close(); 
 
-            for (string id_tr : rollback_q) {
+            vector<string> rollback_q_fake = rollback_q;
+            rollback_q.clear();
+
+            for (string id_tr : rollback_q_fake) {
                 Tr *cur_tr = findTransaction(id_tr);
                 cur_tr->state = "active";
 
                 for(Op op:cur_tr->ops) run_op(cur_tr, op.file, op.type);
             } 
 
-            for (string id_tr : rollback_q) remove_rollback_q(id_tr);
         }
 
         void run_waiting_list() {
@@ -156,6 +149,7 @@ class Lock_Manager {
         }
 
         void rollback(Tr *ti, string type, string file) {
+            ti->state = "rollbacked";
             remove_tr_from_lock(ti->id_tr);     // limpa os bloqueios
             rollback_q.push_back(ti->id_tr);    // coloca na wait_q
             clear_graph(ti->id_tr);             // apaga a transação onde ela a aparece no grafo de outra transação
@@ -192,7 +186,7 @@ class Lock_Manager {
             wait_q_by_file[file].push_back(make_tuple(type, ti->id_tr));
 
             print_op(type, file, ti->id_tr);
-            print_nrollback();
+            print_nrollback("EM ESPERA");
         }
 
         bool has_element_in_graph(string id_tr, vector<string> graph) {
@@ -208,11 +202,11 @@ class Lock_Manager {
         void protocol_wait_die(Tr *ti, vector<string> trs_conflitantes, string file, string type) {
             // Esperar-morrer: se Ti tem prioridade mais alta, ela pode esperar; caso contrário, é cancelada.
             Tr* highest_priority_tr = highest_priority(ti, trs_conflitantes);
-
+            
             if(ti->id_tr == highest_priority_tr->id_tr) {
-                wait_state(ti, file, type); 
                 for(string tr_id : trs_conflitantes) 
                     if(!has_element_in_graph(tr_id, ti->wait_for_list_ids)) ti->wait_for_list_ids.push_back(tr_id);
+                wait_state(ti, file, type); 
             } 
             else rollback(ti, type, file);
         }
@@ -226,9 +220,9 @@ class Lock_Manager {
                     rollback(cur_tr, type, file);    
                 } 
                 else {
-                    wait_state(ti, file, type); 
                     for(string tr_id : trs_conflitantes) 
                         if(!has_element_in_graph(tr_id, ti->wait_for_list_ids)) ti->wait_for_list_ids.push_back(tr_id);
+                    wait_state(ti, file, type); 
                 }
             }
         }
@@ -282,29 +276,6 @@ class Lock_Manager {
 			lock_table_file.close();
         }
 
-        void change_lock(string file, string type_lock, string id_tr, string change_to) {
-            string str_change;
-            lock_table_file.open("lock_table_file.txt",  std::ios_base::in);
-
-            string tr_id_lock, type_lock_in_table, file_in_lock_table;
-            
-            while(lock_table_file.good()) {
-                getline(lock_table_file, tr_id_lock, ',');
-                getline(lock_table_file, type_lock_in_table, ',');
-                getline(lock_table_file, file_in_lock_table);
-                if(tr_id_lock == "" || type_lock_in_table == "" || file_in_lock_table == "") break;
-
-                if(file == file_in_lock_table && type_lock_in_table == type_lock && tr_id_lock == id_tr) {
-                    str_change = tr_id_lock + ',' + type_lock_in_table + ',' + file_in_lock_table + '\n';
-                    break;
-                }
-            }
-            
-            lock_table_file.close();
-            string new_lock = tr_id_lock + ',' + change_to + ',' + file_in_lock_table + '\n';
-            update_lock_table(str_change, new_lock);
-        }
-
         void remove_tr_from_lock(string id_tr) {
             vector<string> str_change;
             lock_table_file.open("lock_table_file.txt",  std::ios_base::in);
@@ -327,35 +298,45 @@ class Lock_Manager {
 
         void ls(Tr *tr, string file, string type) {
             if(tr->state != "active") {
-                if(tr->state == "await") wait_state(tr, file, "S"); 
-                print_op(type, file, tr->id_tr);
-                print_nrollback();
+                if(tr->state == "rollbacked") {
+                    print_op(type, file, tr->id_tr);
+                    print_nrollback("ROLLBACK");
+                }
+
+                if(tr->state == "await") {
+                    wait_state(tr, file, "S"); 
+                } 
                 return;
             }
 
             if(tr->ops.size() > 0 && tr->has_op("S", file)) {
                 print_op(type, file, tr->id_tr);
-                print_nrollback();
+                print_nrollback("OK");
                 return;
             }
 
             vector<string> trs_conflitantes = hasLock(file, "X", tr->id_tr);
             if(trs_conflitantes.size() > 0) {
-                if(protocol) protocol_wait_die(tr, trs_conflitantes, file, "S");
+                if(!protocol) protocol_wait_die(tr, trs_conflitantes, file, "S");
                 else protocol_wound_wait(tr, trs_conflitantes, file, "S");
                 return;
             }
 
             createLock(tr, file, "S");
             print_op(type, file, tr->id_tr);
-            print_nrollback();
+            print_nrollback("OK");
         }
 
         void lx(Tr *tr, string file, string type) {
             if(tr->state != "active") {
-                if(tr->state == "await") wait_state(tr, file, type); 
-                print_op(type, file, tr->id_tr);
-                print_nrollback();
+                if(tr->state == "rollbacked") {
+                    print_op(type, file, tr->id_tr);
+                    print_nrollback("ROLLBACK");
+                }
+
+                if(tr->state == "await") {
+                    wait_state(tr, file, "X"); 
+                } 
                 return;
             }
 
@@ -364,8 +345,8 @@ class Lock_Manager {
                 if(tr->has_op("S", file)) { // editar a lock_table
                     trs_conflitantes = hasLock(file, "S", tr->id_tr);
                     if(trs_conflitantes.size() > 0) {
-                        if(protocol) protocol_wait_die(tr, trs_conflitantes, file, "S");
-                        else protocol_wound_wait(tr, trs_conflitantes, file, "S");
+                        if(!protocol) protocol_wait_die(tr, trs_conflitantes, file, "X");
+                        else protocol_wound_wait(tr, trs_conflitantes, file, "X");
                         return;
                     }
                 } 
@@ -373,28 +354,36 @@ class Lock_Manager {
 
             trs_conflitantes = hasLock(file, "X", tr->id_tr);
             if(trs_conflitantes.size() > 0) {
-                if(protocol) protocol_wait_die(tr, trs_conflitantes, file, "S");
-                else protocol_wound_wait(tr, trs_conflitantes, file, "S");
+                if(!protocol) protocol_wait_die(tr, trs_conflitantes, file, "X");
+                else protocol_wound_wait(tr, trs_conflitantes, file, "X");
                 return;
             }
 
             trs_conflitantes = hasLock(file, "S", tr->id_tr);
             if(trs_conflitantes.size() > 0) {
-                if(protocol) protocol_wait_die(tr, trs_conflitantes, file, "S");
-                else protocol_wound_wait(tr, trs_conflitantes, file, "S");
+                if(!protocol) protocol_wait_die(tr, trs_conflitantes, file, "X");
+                else protocol_wound_wait(tr, trs_conflitantes, file, "X");
                 return;
             }
 
             createLock(tr, file, "X");
             print_op(type, file, tr->id_tr);
-            print_nrollback();
+            print_nrollback("OK");
         }
 
         void u(Tr *tr) {
-            if(tr->state == "await") wait_state(tr, "", "C");
+            if(tr->state == "await") {
+                wait_state(tr, "", "C");
+                return;
+            } 
+            else if(tr->state == "rollbacked") {
+                print_op("C", "", tr->id_tr);
+                print_nrollback("ROLLBACK");
+                return;
+            }
             else realization(tr);
 
             print_op("C", "", tr->id_tr);
-            print_nrollback();
+            print_nrollback("OK");
         }
 };
