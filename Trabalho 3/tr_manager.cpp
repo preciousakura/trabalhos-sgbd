@@ -7,8 +7,17 @@ class Tr_Manager {
         Lock_Manager lock_manager;
 
         Tr_Manager() {
+            cout << "0. WAIT-DIE" << endl;
+            cout << "1. WOUND-WAIT" << endl;
+            cout << "Protocolo: ";
+            cin >> lock_manager.protocol;
+
             out.open("out.txt", std::ios_base::out);
             out << "--- Output ---" << endl << endl;
+            out << "Protocolo aplicado: ";
+            if(lock_manager.protocol) out << "WAIT-DIE";
+            else out << "WOUND-WAIT";
+            out << endl << endl;
             out.close();
         }
 
@@ -22,26 +31,11 @@ class Tr_Manager {
         }
         
         Tr* findTransaction(string id) {
-            for(int i = 0; i < transactions.size(); i++) {
-                if(transactions[i].id_tr == id) {
+            for(int i = 0; i < transactions.size(); i++) 
+                if(transactions[i].id_tr == id) 
                     return &transactions[i];
-                }
-            }
             return nullptr;
         } 
-
-        void write_graph() {
-            out.open("out.txt", std::ios_base::app);
-            out << "Arestas do Grafo { ";
-
-            for(Tr tr:transactions) {
-                for(string s:tr.wait_for_list_ids) {
-                    out << "T" << tr.id_tr << "->T" << s << ' '; 
-                } 
-            }
-            out << "}" << endl;
-            out.close();
-        }
 
         void readType(string type, string file, string id_tr) {
             if(type == "BT") {
@@ -64,8 +58,6 @@ class Tr_Manager {
                 lock_manager.lx(tr, file, type);
                 tr->ops.push_back(create_op(true, file, "X"));
             }
-
-            write_graph();
         }
 
         void createtransactions(string id_tr) {
@@ -81,7 +73,7 @@ class Tr_Manager {
             lock_manager.num_of_trs = transactions.size();
 
             out.open("out.txt", std::ios_base::app);
-            out << "Arestas do Grafo { }, Lista do item de dado rollback { }" << endl;
+            out << "BT(" << id_tr << "): Arestas do Grafo { }, SEM ROLLBACK" << endl;
             out.close();
         }
 };

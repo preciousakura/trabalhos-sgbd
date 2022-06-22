@@ -1,10 +1,26 @@
 --- Output ---
 
-Arestas do Grafo { }, Lista do item de dado rollback { }
-Arestas do Grafo { }, Lista do item de dado rollback { }
-Arestas do Grafo { }
-Arestas do Grafo { }
-Arestas do Grafo { T1->T2 }
-Arestas do Grafo { T1->T2 }
-Arestas do Grafo { }
-Arestas do Grafo { }
+Protocolo aplicado: WOUND-WAIT
+BT(1): Arestas do Grafo { }, SEM ROLLBACK
+r1(x): Arestas do Grafo { }, SEM ROLLBACK
+BT(2): Arestas do Grafo { }, SEM ROLLBACK
+r2(x): Arestas do Grafo { }, SEM ROLLBACK
+r2(y): Arestas do Grafo { T2->T1 }, SEM ROLLBACK
+r2(y): Arestas do Grafo { T2->T1 }, SEM ROLLBACK
+r1(y): Arestas do Grafo { T2->T1 }, SEM ROLLBACK
+C(1): Arestas do Grafo { }, SEM ROLLBACK
+r2(z): Arestas do Grafo { }, SEM ROLLBACK
+r2(z): Arestas do Grafo { }, SEM ROLLBACK
+C(2): Arestas do Grafo { }, SEM ROLLBACK
+C(2): Arestas do Grafo { }, SEM ROLLBACK
+
+Comandos em espera:
+r2(x): Arestas do Grafo { }, SEM ROLLBACK
+r2(y): Arestas do Grafo { }, SEM ROLLBACK
+r2(z): Arestas do Grafo { }, SEM ROLLBACK
+C(2): Arestas do Grafo { }, SEM ROLLBACK
+
+Transacoes que sofreram rollback:
+Lista vazia
+
+História Finalizada

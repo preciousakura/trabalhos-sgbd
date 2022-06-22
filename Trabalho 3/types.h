@@ -17,7 +17,7 @@ typedef struct Tr {
     vector<string> wait_for_list_ids;
     vector<Op> ops;
 
-    bool has_lock(string type, string file) {
+    bool has_op(string type, string file) {
         for(Op op: ops) {
             if(op.type == type && op.file == file) return true;
         } return false;
