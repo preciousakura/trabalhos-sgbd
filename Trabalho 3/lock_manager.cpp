@@ -2,13 +2,13 @@
 class Lock_Manager {  
     public:
         fstream lock_table_file, out;
+
         int num_of_trs;
         Tr* first_element;
 
-        vector<Wait_Q_Data> wait_q_data;
-        vector<Lock> lock_table;
-        vector<string> rollback_q;
-        unordered_map<string, vector<tuple<string, string>>> wait_q_by_file;
+        vector<Wait_Q_Data> wait_q_data; // transações em espera
+        vector<string> rollback_q;       // transações que sofreram rollback
+        unordered_map<string, vector<tuple<string, string>>> wait_q_by_file; 
 
         int protocol;
 

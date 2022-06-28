@@ -1,31 +1,70 @@
 --- Output ---
 
-Protocolo aplicado: WAIT-DIE
+Protocolo aplicado: WOUND-WAIT
 
 BT(1): Arestas do Grafo { }, OK
 BT(2): Arestas do Grafo { }, OK
 BT(3): Arestas do Grafo { }, OK
-r2(y): Arestas do Grafo { }, OK
-r3(y): Arestas do Grafo { }, OK
-w2(y): Arestas do Grafo { T2->T3 }, EM ESPERA
-w1(y): Arestas do Grafo { T1->T2 T1->T3 T2->T3 }, EM ESPERA
-C(1): Arestas do Grafo { T1->T2 T1->T3 T2->T3 }, EM ESPERA
-r2(z): Arestas do Grafo { T1->T2 T1->T3 T2->T3 }, EM ESPERA
-C(2): Arestas do Grafo { T1->T2 T1->T3 T2->T3 }, EM ESPERA
-C(3): Arestas do Grafo { T1->T2 }, OK
-
-Comandos em espera:
-w2(y): Arestas do Grafo { T1->T2 }, OK
-w1(y): Arestas do Grafo { T1->T2 }, EM ESPERA
-C(1): Arestas do Grafo { T1->T2 }, EM ESPERA
-r2(z): Arestas do Grafo { T1->T2 }, OK
+BT(4): Arestas do Grafo { }, OK
+BT(5): Arestas do Grafo { }, OK
+BT(6): Arestas do Grafo { }, OK
+BT(7): Arestas do Grafo { }, OK
+BT(8): Arestas do Grafo { }, OK
+BT(9): Arestas do Grafo { }, OK
+BT(1): Arestas do Grafo { }, OK
+BT(1): Arestas do Grafo { }, OK
+BT(1): Arestas do Grafo { }, OK
+r1(A): Arestas do Grafo { }, OK
+w2(B): Arestas do Grafo { }, OK
+r1(C): Arestas do Grafo { }, OK
+w4(D): Arestas do Grafo { }, OK
+w5(A): Arestas do Grafo { T5->T1 }, EM ESPERA
+r2(E): Arestas do Grafo { T5->T1 }, OK
+w2(E): Arestas do Grafo { T5->T1 }, OK
+r3(F): Arestas do Grafo { T5->T1 }, OK
+r2(F): Arestas do Grafo { T5->T1 }, OK
+w5(A): Arestas do Grafo { T5->T1 }, EM ESPERA
+C(1): Arestas do Grafo { }, OK
+r6(A): Arestas do Grafo { }, OK
+r6(C): Arestas do Grafo { }, OK
+w6(C): Arestas do Grafo { }, OK
+r7(G): Arestas do Grafo { }, OK
+w8(B): Arestas do Grafo { T8->T2 }, EM ESPERA
+r9(G): Arestas do Grafo { T8->T2 }, OK
+w9(G): Arestas do Grafo { T8->T2 T9->T7 }, EM ESPERA
+r8(E): Arestas do Grafo { T8->T2 T9->T7 }, EM ESPERA
+C(7): Arestas do Grafo { T8->T2 }, OK
+r9(H): Arestas do Grafo { T8->T2 }, EM ESPERA
+r3(G): Arestas do Grafo { T8->T2 }, OK
+w9(H): Arestas do Grafo { T8->T2 }, EM ESPERA
+C(6): Arestas do Grafo { T8->T2 }, OK
+w3(F): Arestas do Grafo { T8->T2 }, Lista do item F { }
+r4(G): Arestas do Grafo { T8->T2 }, OK
 C(2): Arestas do Grafo { }, OK
-
-Comandos em espera:
-w1(y): Arestas do Grafo { }, OK
+C(3): Arestas do Grafo { }, ROLLBACK
+C(4): Arestas do Grafo { }, OK
+C(5): Arestas do Grafo { }, EM ESPERA
+C(8): Arestas do Grafo { }, EM ESPERA
+C(9): Arestas do Grafo { }, EM ESPERA
+C(1): Arestas do Grafo { }, OK
+C(1): Arestas do Grafo { }, OK
 C(1): Arestas do Grafo { }, OK
 
+Comandos em espera:
+w5(A): Arestas do Grafo { }, OK
+w5(A): Arestas do Grafo { }, OK
+w8(B): Arestas do Grafo { }, OK
+w9(G): Arestas do Grafo { }, OK
+r8(E): Arestas do Grafo { }, OK
+r9(H): Arestas do Grafo { }, OK
+w9(H): Arestas do Grafo { }, OK
+C(5): Arestas do Grafo { }, OK
+C(8): Arestas do Grafo { }, OK
+C(9): Arestas do Grafo { }, OK
+
 Transacoes que sofreram rollback:
-Lista vazia
+r3(F): Arestas do Grafo { }, OK
+r3(G): Arestas do Grafo { }, OK
+C(3): Arestas do Grafo { }, OK
 
 História Finalizada

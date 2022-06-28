@@ -23,7 +23,6 @@ DataFile read_file(string &line) {
             break;
         } 
    }
-
    return df;
 }
 
