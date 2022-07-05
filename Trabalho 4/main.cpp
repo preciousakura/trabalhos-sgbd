@@ -2,12 +2,9 @@
 
 string tratar_dado(string dado) {
     string campo = "";
-    
-    for(char &ch:dado){
-        if(ch != ']' && ch != '[' && ch != ' ') {
+    for(char &ch:dado)
+        if(ch != ']' && ch != '[' && ch != ' ') 
             campo += ch;
-        }
-    }
     return campo;
 }
 
@@ -18,7 +15,6 @@ int main(){
     arquivo.open("arquivo.txt", std::ios_base::in);
     string id, timestamp, transacao, operacao, objeto, imgAnterior, imgPosterior;
     while(arquivo.good()) {
-
         getline(arquivo, id, '|');
         getline(arquivo, timestamp, '|');
         getline(arquivo, transacao, '|');
@@ -30,7 +26,7 @@ int main(){
         if(id == "") break;
         gerenciador.readTr(tratar_dado(id), tratar_dado(timestamp), tratar_dado(transacao), tratar_dado(operacao), tratar_dado(objeto), tratar_dado(imgAnterior),  tratar_dado(imgPosterior));
     }
-    
+
     arquivo.close();
 
     gerenciador.redo();
