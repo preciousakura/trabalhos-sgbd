@@ -13,3 +13,12 @@ typedef struct Tr {
     string status; // saber se é ativa ou não ativa
 
 }Tr;
+
+typedef struct Object {
+
+    string objeto_nome;
+    string ant, post;
+    string valor; 
+    string transacao_nome;
+
+}Object;

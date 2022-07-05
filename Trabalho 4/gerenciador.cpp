@@ -4,6 +4,7 @@ class Gerenciador {
     public:
         fstream out;
         vector<Tr> transacoes;
+        vector<Object> objetos;
 
         Gerenciador() {
             out.open("out.txt", std::ios_base::out);
@@ -24,12 +25,64 @@ class Gerenciador {
             criarTr(trs);
         }
 
+        int verificar_existe(string object_name) {
+            int index = -1;
+
+            for(int i = 0; i < objetos.size(); i++)
+                if(objetos[i].objeto_nome == object_name)
+                    return i;                
+            return index; 
+        }
+
+        vector<int> objects_by_transactions(string transaction_name) {
+            vector<int> indexs;
+            for(int i = 0; i < objetos.size(); i++)
+                if(objetos[i].transacao_nome == transaction_name)
+                    indexs.push_back(i);                
+            return indexs; 
+        }
+
         void classificar(Tr *transacao) {
-            if(transacao->operacao == "w" || transacao->operacao == "r" || transacao->operacao == "a") 
+            if(transacao->operacao == "w" || transacao->operacao == "r") 
                 transacao->status = "ativa"; 
-            
             else if(transacao->operacao == "c")
                 transacao->status = "nao_ativa"; 
+            else if(transacao->operacao == "a")
+                transacao->status = "rollback";
+            
+
+            if(transacao->objeto == "") {
+                vector<int> indexs = objects_by_transactions(transacao->transacao);
+                if(indexs.size() > 0) {
+                    for(int i : indexs) {
+                        if(transacao->status == "ativa") objetos[i].valor = objetos[i].ant;
+                        else if(transacao->status == "nao_ativa") objetos[i].valor = objetos[i].post;
+                        else objetos[i].valor = "";
+                    }
+                }  
+            } else {
+                int index = verificar_existe(transacao->objeto);
+                if(index == -1) {
+                    Object no;
+                    no.objeto_nome = transacao->objeto;
+                    no.transacao_nome = transacao->transacao;
+                    no.ant = transacao->imgAnterior;
+                    no.post = transacao->imgPosterior;
+
+                    if(transacao->status == "ativa") no.valor = transacao->imgAnterior;
+                    else if(transacao->status == "nao_ativa") no.valor = transacao->imgPosterior;
+
+                    objetos.push_back(no);
+                } else {
+                    objetos[index].transacao_nome = transacao->transacao;
+                    objetos[index].ant = transacao->imgAnterior;
+                    objetos[index].post = transacao->imgPosterior;
+
+                    if(transacao->status == "ativa") objetos[index].valor = transacao->imgAnterior;
+                    else if(transacao->status == "nao_ativa") objetos[index].valor = transacao->imgPosterior;
+                }
+            }
+    
         }
 
         void criarTr(Tr transacao) {
@@ -40,36 +93,42 @@ class Gerenciador {
                     return;
                 };
             }
-
             classificar(&transacao);
             transacoes.push_back(transacao);
         }
 
+        void rollback(){ // que sofreram rollback
+            out.open("out.txt", std::ios_base::app);
+            out << "rollback: [";
+            for(Tr tr : transacoes)
+                if(tr.status == "rollback") out << tr.transacao << ", ";
+            out << "]" << endl;
+            out.close();
+        }
+
         void redo() {// não ativas
             out.open("out.txt", std::ios_base::app);
-
-            for(Tr tr : transacoes){
-                if(tr.status == "nao_ativa") {
-                    out << "redo: " << tr.transacao << " -> " << tr.imgPosterior << endl;
-                    // nome da transacao e imagem posterior dela
-                    // [ 4 | 3 | T2 | c | x | 30 | 90 ] redo: T2 -> 90
-                }
-            }
-
+            out << "redo: [";
+            for(Tr tr : transacoes)
+                if(tr.status == "nao_ativa") out << tr.transacao << ", ";
+            out << "]" << endl;
             out.close();
         }
 
         void undo() { // ativas
             out.open("out.txt", std::ios_base::app);
-            
-            for(int i = transacoes.size() - 1; i >= 0; i--) {
-                if(transacoes[i].status == "ativa") {
-                    out << "undo: " << transacoes[i].transacao << " -> " << transacoes[i].imgAnterior << endl;
-                    // ler do final do log pro início
-                    // nome da transacao e imagem anterior dela
-                    // [ 3 | 2 | T3 | r | x | 20 | 10 ] undo: T3 -> 20
-                }
-            }
+            out<< "undo: ["; 
+            for(int i = transacoes.size() - 1; i >= 0; i--) 
+                if(transacoes[i].status == "ativa") out << transacoes[i].transacao << ", ";
+            out << "]" << endl;
+            out.close();
+        }
+
+        void mostrar_objeto(){
+            out.open("out.txt", std::ios_base::app);
+            out << endl; 
+            for(int i = 0; i < objetos.size(); i++) 
+                out << objetos[i].objeto_nome << " = " << objetos[i].valor << endl;
             out.close();
         }
 };

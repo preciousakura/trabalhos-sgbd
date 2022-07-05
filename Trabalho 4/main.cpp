@@ -30,10 +30,13 @@ int main(){
         if(id == "") break;
         gerenciador.readTr(tratar_dado(id), tratar_dado(timestamp), tratar_dado(transacao), tratar_dado(operacao), tratar_dado(objeto), tratar_dado(imgAnterior),  tratar_dado(imgPosterior));
     }
+    
     arquivo.close();
 
     gerenciador.redo();
     gerenciador.undo();
+    gerenciador.rollback();
+    gerenciador.mostrar_objeto();
 
     return 0;
 }

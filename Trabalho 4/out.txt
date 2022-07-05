@@ -1,3 +1,7 @@
-redo: T2 -> 
-undo: T3 -> 20
-undo: T1 -> 
+redo: [T2, ]
+undo: [T3, ]
+rollback: [T1, ]
+
+a = 2
+b = 11
+c = 20
