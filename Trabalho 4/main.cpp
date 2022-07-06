@@ -8,7 +8,7 @@ string tratar_dado(string dado) {
     return campo;
 }
 
-int main(){
+int main() {
     Gerenciador gerenciador;
 
     fstream arquivo;

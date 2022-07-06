@@ -49,25 +49,32 @@ class Gerenciador {
                 transacao->status = "nao_ativa"; 
             else if(transacao->operacao == "a")
                 transacao->status = "rollback";
-            
+
+
 
             if(transacao->objeto == "") {
                 vector<int> indexs = objects_by_transactions(transacao->transacao);
                 if(indexs.size() > 0) {
                     for(int i : indexs) {
-                        if(transacao->status == "ativa") objetos[i].valor = objetos[i].ant;
-                        else if(transacao->status == "nao_ativa") objetos[i].valor = objetos[i].post;
+                        if(transacao->status == "ativa") objetos[i].valor = objetos[i].valores[transacao->transacao][0][0];
+                        else if(transacao->status == "nao_ativa") objetos[i].valor = objetos[i].valores[transacao->transacao][objetos[i].valores[transacao->transacao].size() - 1][1];
                         else objetos[i].valor = "";
                     }
                 }  
             } else {
+
                 int index = verificar_existe(transacao->objeto);
                 if(index == -1) {
                     Object no;
                     no.objeto_nome = transacao->objeto;
                     no.transacao_nome = transacao->transacao;
-                    no.ant = transacao->imgAnterior;
-                    no.post = transacao->imgPosterior;
+                    
+
+                    vector<string> valor;
+                    valor.push_back(transacao->imgAnterior);
+                    valor.push_back(transacao->imgPosterior);
+
+                    no.valores[transacao->transacao].push_back(valor);
 
                     if(transacao->status == "ativa") no.valor = transacao->imgAnterior;
                     else if(transacao->status == "nao_ativa") no.valor = transacao->imgPosterior;
@@ -75,14 +82,18 @@ class Gerenciador {
                     objetos.push_back(no);
                 } else {
                     objetos[index].transacao_nome = transacao->transacao;
-                    objetos[index].ant = transacao->imgAnterior;
-                    objetos[index].post = transacao->imgPosterior;
 
-                    if(transacao->status == "ativa") objetos[index].valor = transacao->imgAnterior;
-                    else if(transacao->status == "nao_ativa") objetos[index].valor = transacao->imgPosterior;
+                    vector<string> valor;
+                    valor.push_back(transacao->imgAnterior);
+                    valor.push_back(transacao->imgPosterior);
+
+                    objetos[index].valores[transacao->transacao].push_back(valor);
+
+                    if(transacao->status == "ativa") objetos[index].valor = objetos[index].valores[transacao->transacao][0][0];
+                    else if(transacao->status == "nao_ativa") objetos[index].valor = objetos[index].valores[transacao->transacao][objetos[index].valores[transacao->transacao].size() - 1][1];
                 }
             }
-    
+
         }
 
         void criarTr(Tr transacao) {
@@ -97,7 +108,7 @@ class Gerenciador {
             transacoes.push_back(transacao);
         }
 
-        void rollback(){ // que sofreram rollback
+        void rollback() { // que sofreram rollback
             out.open("out.txt", std::ios_base::app);
             out << "rollback: [";
             for(Tr tr : transacoes)
@@ -106,7 +117,7 @@ class Gerenciador {
             out.close();
         }
 
-        void redo() {// não ativas
+        void redo() { // não ativas
             out.open("out.txt", std::ios_base::app);
             out << "redo: [";
             for(Tr tr : transacoes)
@@ -124,7 +135,7 @@ class Gerenciador {
             out.close();
         }
 
-        void mostrar_objeto(){
+        void mostrar_objeto() {
             out.open("out.txt", std::ios_base::app);
             out << endl; 
             for(int i = 0; i < objetos.size(); i++) 
