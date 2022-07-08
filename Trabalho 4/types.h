@@ -18,4 +18,5 @@ typedef struct Object {
     unordered_map<string, vector<vector<string>>> valores;
     string valor; 
     string transacao_nome;
+    string tr_type;
 } Object;

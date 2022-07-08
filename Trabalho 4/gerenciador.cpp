@@ -50,31 +50,37 @@ class Gerenciador {
             else if(transacao->operacao == "a")
                 transacao->status = "rollback";
 
-
-
-            if(transacao->objeto == "") {
+            if(transacao->operacao == "c") {
                 vector<int> indexs = objects_by_transactions(transacao->transacao);
                 if(indexs.size() > 0) {
                     for(int i : indexs) {
-                        if(transacao->status == "ativa") objetos[i].valor = objetos[i].valores[transacao->transacao][0][0];
-                        else if(transacao->status == "nao_ativa") objetos[i].valor = objetos[i].valores[transacao->transacao][objetos[i].valores[transacao->transacao].size() - 1][1];
-                        else objetos[i].valor = "";
+                        objetos[i].valor = objetos[i].valores[transacao->transacao][objetos[i].valores[transacao->transacao].size() - 1][1];
+                    }
+                }  
+            }  
+            else if(transacao->operacao == "a") {
+                vector<int> indexs = objects_by_transactions(transacao->transacao);
+                if(indexs.size() > 0) {
+                    for(int i : indexs) {
+                        objetos[i].valor = objetos[i].valores[transacao->transacao][0][0];
                     }
                 }  
             } else {
-
                 int index = verificar_existe(transacao->objeto);
+        
                 if(index == -1) {
                     Object no;
                     no.objeto_nome = transacao->objeto;
                     no.transacao_nome = transacao->transacao;
-                    
 
+                    
                     vector<string> valor;
                     valor.push_back(transacao->imgAnterior);
                     valor.push_back(transacao->imgPosterior);
 
                     no.valores[transacao->transacao].push_back(valor);
+
+                    no.tr_type = transacao->status;
 
                     if(transacao->status == "ativa") no.valor = transacao->imgAnterior;
                     else if(transacao->status == "nao_ativa") no.valor = transacao->imgPosterior;
@@ -87,13 +93,13 @@ class Gerenciador {
                     valor.push_back(transacao->imgAnterior);
                     valor.push_back(transacao->imgPosterior);
 
+
                     objetos[index].valores[transacao->transacao].push_back(valor);
 
                     if(transacao->status == "ativa") objetos[index].valor = objetos[index].valores[transacao->transacao][0][0];
                     else if(transacao->status == "nao_ativa") objetos[index].valor = objetos[index].valores[transacao->transacao][objetos[index].valores[transacao->transacao].size() - 1][1];
                 }
             }
-
         }
 
         void criarTr(Tr transacao) {

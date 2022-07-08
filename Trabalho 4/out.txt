@@ -1,8 +1,15 @@
-redo: [T2, ]
-undo: [T3, T1, ]
-rollback: []
+redo: [T2, T3, T4, T6, T7, T10, ]
+undo: [T11, T8, ]
+rollback: [T1, T5, T9, ]
 
-x = 10
-y = 10
-z = 25
-a = 12
+x = 293
+y = 150
+z = 100
+k = 39
+j = 20
+l = 36
+m = 200
+n = -37
+g = 27
+p = 9
+s = 21
